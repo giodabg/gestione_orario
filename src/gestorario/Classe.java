@@ -7,7 +7,7 @@ package gestorario;
 
 import java.awt.*;  //grafica
 import java.util.Vector;
-
+import javax.swing.*; // dialog box
     /**
  *
  * @author Gio
@@ -73,12 +73,25 @@ public class Classe {
         colore = c;
     }
 
-    public void addOra(Ora o) {
-        Ora oo = listaOre.get(o.giorno, o.spazio);
+    public void addOra(GraphOra o) {
+        /****
+        GraphOra oo = listaOre.get(o.giorno, o.spazio);
         if (oo != null)
             listaOre.remove(oo);
         oo = null;
-        listaOre.add(o);
+         */
+        if (!listaOre.add(o)) {
+            GraphOra oo = listaOre.get(o.giorno, o.spazio);
+            String str = "Nella classe "+nome+", nel giorno "+o.giorno+" l'ora "+o.spazio+" è già assegnata a ";
+            if (oo.getDoc() != null) {
+                str += oo.getDoc().nome;
+            }
+            if (oo.getDocCom() != null) {
+                str += " "+oo.getDocCom().nome;
+            }
+            System.out.println(str);
+            JOptionPane.showMessageDialog(null, str);
+        }
     }
 
     private Color classeColor() {

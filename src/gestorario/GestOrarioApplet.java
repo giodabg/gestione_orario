@@ -46,12 +46,14 @@ public class GestOrarioApplet extends Applet implements MouseListener, MouseMoti
     static  int         TIPODOCENTE = 2;
     static  int         TIPOAULA = 3;
 
+    static  SelCorOre   selCorApplet;
+
     static  LoadCSV loadInfo;
     static  String workDir = "C://Users//Gio//Documents//NetBeansProjects//GestOrario//";
     static  ListaInfoMatDocClassAule infoMatDocAule;
     static  ListaClassi classi;
     static  ListaAule   aule;
-    private Docente     docCollegato;
+    public  Docente     docApplet;
 
     static  Aula a0;
     static  Materia m0;
@@ -106,6 +108,8 @@ public class GestOrarioApplet extends Applet implements MouseListener, MouseMoti
 //        aulaDes  = new Aula(2, "Info A2", 3, 0, 0, 0, "tutte", Color.YELLOW);
 //        classeDes = new Classe (2, 1, 'B', "Informatica", 'I', aula1B, infoMatDocAule, Color.GREEN);
 
+        selCorApplet = new SelCorOre();
+
         xTabDocColl     =  40; xTabClasseDocColl = 380; xTabDocScam     = 720;
         yTabDocColl     =  40; yTabClasseDocColl =  40; yTabDocScam     =  40;
 
@@ -115,12 +119,12 @@ public class GestOrarioApplet extends Applet implements MouseListener, MouseMoti
         do {
             String nome = JOptionPane.showInputDialog("Docente:");
             if ( (nome != null) && (nome.isEmpty()) ) {
-                docCollegato = infoMatDocAule.getDocente("Breviario");
+                docApplet = infoMatDocAule.getDocente("Breviario");
             }
             else {
-                docCollegato = infoMatDocAule.getDocente(nome);
+                docApplet = infoMatDocAule.getDocente(nome);
             }
-        } while (docCollegato == null);
+        } while (docApplet == null);
 
 
         Frame frameApplet = (Frame)SwingUtilities.getAncestorOfClass(Frame.class, this);
@@ -133,7 +137,7 @@ public class GestOrarioApplet extends Applet implements MouseListener, MouseMoti
         tabDocScam       = new GraphTable(5, 6, 6, 50, 38, xTabDocScam,   yTabDocScam,    this, 0, frameApplet);
         tabDocScamComp   = new GraphTable(6, 6, 6, 50, 38, xTabDocScamComp,yTabDocScamComp, this, 0, frameApplet);
 
-        tabDocColl.setList(docCollegato, TIPODOCENTE, infoMatDocAule);
+        tabDocColl.setList(docApplet, TIPODOCENTE, infoMatDocAule);
         tabDocColl.setVisible(true);
         tabDocColl.setStatoRicerca(1);
 
@@ -154,13 +158,13 @@ public class GestOrarioApplet extends Applet implements MouseListener, MouseMoti
         do {
             String nome = JOptionPane.showInputDialog("Docente:");
             if ( (nome != null) && (nome.isEmpty()) ) {
-                docCollegato = infoMatDocAule.getDocente("Breviario");
+                docApplet = infoMatDocAule.getDocente("Breviario");
             }
             else {
-                docCollegato = infoMatDocAule.getDocente(nome);
+                docApplet = infoMatDocAule.getDocente(nome);
             }
-        } while (docCollegato == null);
-        tabDocColl.setList(docCollegato, TIPODOCENTE, infoMatDocAule);
+        } while (docApplet == null);
+        tabDocColl.setList(docApplet, TIPODOCENTE, infoMatDocAule);
         tabDocColl.setVisible(true);
         tabDocColl.setStatoRicerca(1);
         repaint();
@@ -183,12 +187,12 @@ public class GestOrarioApplet extends Applet implements MouseListener, MouseMoti
             // l'ordine di visualizzazione è importante perchè ogni tabella
             // decide se la prossima è da visualizzare
             // e tutto viene scatenato dalla prima tabella
-            tabDocColl.paintTabella(g);
-            tabClasseDocColl.paintTabella(g);
-            tabDocComp.paintTabella(g);
-            tabLabDocColl.paintTabella(g);
-            tabDocScam.paintTabella(g);
-            tabDocScamComp.paintTabella(g);
+            tabDocColl.paintTabella(g, selCorApplet);
+            tabClasseDocColl.paintTabella(g, selCorApplet);
+            tabDocComp.paintTabella(g, selCorApplet);
+            tabLabDocColl.paintTabella(g, selCorApplet);
+            tabDocScam.paintTabella(g, selCorApplet);
+            tabDocScamComp.paintTabella(g, selCorApplet);
     }
 
     private boolean mouseInTabella(MouseEvent e, GraphTable tab) {
@@ -208,7 +212,7 @@ public class GestOrarioApplet extends Applet implements MouseListener, MouseMoti
 
     private boolean mustRepaintTab(MouseEvent e, GraphTable tab) {
         if (tab.getVisible() && mouseInTabella(e, tab) ) {
-           if (tab.cambiaOraCorrente(e)) {
+           if (tab.cambiaOraCorrente(e, selCorApplet, docApplet)) {
                repaint();
                return true;
            }
@@ -240,7 +244,7 @@ public class GestOrarioApplet extends Applet implements MouseListener, MouseMoti
             && (e.getX() < tab.getShiftX() + (tab.getB() * tab.getColonne()))
             && (e.getY() > tab.getShiftY())
             && (e.getY() < tab.getShiftY() + (tab.getH() * tab.getRighe()))) {
-               tab.selezione(e, docCollegato);
+               tab.selezione(e, docApplet, selCorApplet);
                repaint();
                return true;
             }

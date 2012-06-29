@@ -23,11 +23,13 @@ public class SecondWindow extends JPanel implements MouseListener, MouseMotionLi
     private int         xTabClasseDocColl, xTabLabDocColl, xTabDocColl, xTabDocComp;
     private int         yTabClasseDocColl, yTabLabDocColl, yTabDocColl, yTabDocComp;
 
+    static  SelCorOre   selCorWin;
+
     private GraphTable  tabDocScamComp, tabDocScam;
     private int         xTabDocScamComp, xTabDocScam;
     private int         yTabDocScamComp, yTabDocScam;
 
-    private Docente     docCollegato;
+    public  Docente     docWindow;
 
     public SecondWindow() {
         JButton calcSumBtn = new JButton("Torna");
@@ -40,14 +42,14 @@ public class SecondWindow extends JPanel implements MouseListener, MouseMotionLi
         add(calcSumBtn);
     }
 
-    public void intiTSecondWindow(Ora o) {
+    public void intiTSecondWindow(GraphOra o) {
 
             this.setSize(600, 800);
 
             if (o.docenteConProblemi != null)
-                docCollegato = o.docenteConProblemi;
+                docWindow = o.docenteConProblemi;
             else
-                docCollegato = o.getDoc();
+                docWindow = o.getDoc();
 
 
             xTabDocColl     =  40; xTabClasseDocColl = 380; xTabDocScam     = 720;
@@ -67,10 +69,11 @@ public class SecondWindow extends JPanel implements MouseListener, MouseMotionLi
             tabDocScam       = new GraphTable(5, 6, 6, 50, 38, xTabDocScam,   yTabDocScam,    this, 1, frameApplet);
             tabDocScamComp   = new GraphTable(6, 6, 6, 50, 38, xTabDocScamComp,yTabDocScamComp, this, 1, frameApplet);
 
-            tabDocColl.setList(docCollegato, GestOrarioApplet.TIPODOCENTE, GestOrarioApplet.infoMatDocAule);
+            tabDocColl.setList(docWindow, GestOrarioApplet.TIPODOCENTE, GestOrarioApplet.infoMatDocAule);
             tabDocColl.setVisible(true);
-            tabDocColl.setSelezione(o.giorno, o.spazio);
-            tabDocColl.setNewStatoRicerca();
+            selCorWin = new SelCorOre();
+            selCorWin.setSelezione(o.giorno, o.spazio);
+            tabDocColl.setNewStatoRicerca(selCorWin, docWindow);
 
             tabDocColl.setSuccTableRig(tabClasseDocColl);
             tabDocColl.setSuccTableCol(tabDocComp);
@@ -80,6 +83,7 @@ public class SecondWindow extends JPanel implements MouseListener, MouseMotionLi
 
             tabDocScam.setSuccTableCol(tabDocScamComp);
 
+            repaint();
             addMouseMotionListener(this);
             addMouseListener(this);
 
@@ -90,12 +94,12 @@ public class SecondWindow extends JPanel implements MouseListener, MouseMotionLi
 @Override
     public void paintComponent(Graphics g) {
             g.clearRect(0, 0, 1400, 900);
-            tabDocColl.paintTabella(g);
-            tabClasseDocColl.paintTabella(g);
-            tabDocComp.paintTabella(g);
-            tabLabDocColl.paintTabella(g);
-            tabDocScam.paintTabella(g);
-            tabDocScamComp.paintTabella(g);
+            tabDocColl.paintTabella(g, selCorWin);
+            tabClasseDocColl.paintTabella(g, selCorWin);
+            tabDocComp.paintTabella(g, selCorWin);
+            tabLabDocColl.paintTabella(g, selCorWin);
+            tabDocScam.paintTabella(g, selCorWin);
+            tabDocScamComp.paintTabella(g, selCorWin);
     }
 
       private void actionTorna() {
@@ -120,7 +124,7 @@ public class SecondWindow extends JPanel implements MouseListener, MouseMotionLi
 
     private boolean mustRepaintTab(MouseEvent e, GraphTable tab) {
         if (tab.getVisible() && mouseInTabella(e, tab) ) {
-           if (tab.cambiaOraCorrente(e)) {
+           if (tab.cambiaOraCorrente(e, selCorWin, docWindow)) {
                return true;
            }
         }
@@ -151,7 +155,7 @@ public class SecondWindow extends JPanel implements MouseListener, MouseMotionLi
             && (e.getX() < tab.getShiftX() + (tab.getB() * tab.getColonne()))
             && (e.getY() > tab.getShiftY())
             && (e.getY() < tab.getShiftY() + (tab.getH() * tab.getRighe()))) {
-               tab.selezione(e, docCollegato);
+               tab.selezione(e, docWindow, selCorWin);
                repaint();
                return true;
             }

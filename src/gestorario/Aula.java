@@ -7,6 +7,7 @@ package gestorario;
 
 import java.awt.*;  //grafica
 import java.util.Vector;
+import javax.swing.*; // dialog box
 
     /**
  *
@@ -52,7 +53,7 @@ public class Aula {
         /*
         for (int g = 1; g <= GestOrarioApplet.maxNumGiorni; g++) {
         for (int s = 1; s <= GestOrarioApplet.maxNumSpazi; s++) {
-        listaOre.addOra(new Ora(g, s, null, GestOrarioApplet.d0,
+        listaOre.addOra(new GraphOra(g, s, null, GestOrarioApplet.d0,
         GestOrarioApplet.m0, GestOrarioApplet.a0, GestOrarioApplet.c0));
         }
         }
@@ -86,13 +87,20 @@ public class Aula {
         return trovato;
     }
 
-    public void addOra(Ora o) {
-        Ora oo = listaOre.get(o.giorno, o.spazio);
+    public void addOra(GraphOra o) {
+        /*****
         if (oo != null)
             listaOre.remove(oo);
         oo = null;
-        listaOre.add(o);
-    }
+         */
+         if ( (!listaOre.add(o)) && !(nome.equalsIgnoreCase("O")) ) {
+            GraphOra oo = listaOre.get(o.giorno, o.spazio);
+            String str = "Nell'aula "+nome+", nel giorno "+o.giorno+" l'ora "+o.spazio+" è già assegnata a "+o.classe.nome;
+            System.out.println(str);
+            JOptionPane.showMessageDialog(null, str);
+
+        }
+   }
 
     public void paint (Graphics g, int x, int y, boolean tutte) {
         g.setColor(colore);

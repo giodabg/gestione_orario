@@ -80,7 +80,7 @@ public class LoadCSV {
         try {
 
             //Construct the BufferedWriter object
-            String nomeFile = GestOrarioApplet.workDir+"orarioDopoScambio"+numSave+".csv";
+            String nomeFile = GestOrarioApplet.workDir+"\\orarioDopoScambio"+numSave+".csv";
             bufferedWriter = new BufferedWriter(new FileWriter(nomeFile));
             bufferedWriter.write("Intestazione, linea1");
             bufferedWriter.newLine();
@@ -138,7 +138,7 @@ public class LoadCSV {
         Color c, cLab;
         Materia m, mLab;
         Docente d, dLab;
-        Ora o, oColl;
+        GraphOra o, oColl;
         int numRig = 100;
         int numCol = 37;
         ArrayList<String> riga1 = null, riga2 = null;
@@ -165,7 +165,7 @@ public class LoadCSV {
                     System.out.println("Creato docente teorico "+d.nome);
                 }
                 for (int gg = 1; gg <= 6; gg++) {
-                    Ora precLab = null;
+                    GraphOra precLab = null;
                     for (int oo = 1; oo <= 6; oo++) {
                         Aula a;
                         String sTeo = riga1.get(1 + oo - 1 + (gg - 1) * 6);
@@ -207,7 +207,7 @@ public class LoadCSV {
                             o = cl.listaOre.get(gg, oo);
                             if (o == null) {
                                 // ora non ancora incontrata
-                                o = new Ora(gg, oo, cl, m, a, c);
+                                o = new GraphOra(gg, oo, cl, m, a, c);
                                 if (d.tipo == Docente.TEORICO)
                                     o.setDoc(d);
                                 else
@@ -229,7 +229,9 @@ public class LoadCSV {
                             if ( (precLab != null) && (precLab.classe == o.classe)
                                && (precLab.aula == o.aula) && (precLab.getPrec() == null)
                                && (precLab.getDoc() == o.getDoc())
-                               && (precLab.getDocCom() == o.getDocCom()))  {
+                               && (precLab.getDocCom() == o.getDocCom())
+                               && (precLab.spazio == oo-1)
+                               && (precLab.giorno == gg) )  {
                                 precLab.setSucc(o);
                                 o.setPrec(precLab);
                             }
@@ -289,7 +291,7 @@ public class LoadCSV {
                             o = cl.listaOre.get(gg, oo);
                             if (o == null) {
                                 // ora non ancora incontrata
-                                o = new Ora(gg, oo, cl, m, a, c);
+                                o = new GraphOra(gg, oo, cl, m, a, c);
                                 if (d.tipo == Docente.TEORICO)
                                     o.setDoc(d);
                                 else
