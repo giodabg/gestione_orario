@@ -10,248 +10,231 @@ package gestorario;
  * @author Gio
  */
 public class SelCorOre {
-    int curGiorno;  // giorno corrente (mouse over)
-    int curSpazio;  // spazio corrente (mouse over)
+    GraphOra curOra;  // giorno corrente (mouse over)
+    GraphOra selOra1;  // giorno selezionato prima ora
+    GraphOra selOra2;  // giorno selezionato seconda ora
 
-    int selGiorno;  // giorno selezionato
-    int selSpazio;  // spazio selezionato
-    int selSpazioLab; // spazio seconda ora lab selezionato
-//    int selSpazio2;
-//    int numSpazSel;       // numero spazi da scambiare
-//    int curSpazio2;
-//    int curSpazio1;
-//    int numSpazCur;
-    int canGiorno;  // giorno candidato
-    int canSpazio;  // spazio candidato
-    int canSpazioLab; // spazio seconda ora lab candidato
-//    int canSpazio2;  // ora candidata
-//    int numSpazCan;
+    GraphOra canOra1Sorg;  // giorno candidato prima ora
+    GraphOra canOra2Sorg;  // giorno candidato seconda ora
+
+    GraphOra canOra1Dest;  // giorno candidato prima ora
+    GraphOra canOra2Dest;  // giorno candidato seconda ora
+
+    static GraphOra canOra2SorgVuota;
+    static GraphOra canOra2DestVuota;
 
 
     SelCorOre () {
-        selGiorno  = -1;
-        selSpazio  = -1;
-        selSpazioLab = -1;
-//        selSpazio2 = -1;
-//        numSpazSel = 0;
-        curGiorno  = -1;
-        curSpazio  = -1;
-//        curSpazioLab = -1;  // ora candidata
-//        curSpazio1 = -1;
-//        curSpazio2 = -1;
-//        numSpazCur = 0;
-        canGiorno  = -1;  // giorno candidato
-        canSpazio  = -1;  // ora candidata
-        canSpazioLab = -1;  // ora candidata
-//        canSpazio2 = -1;  // ora candidata
-//        numSpazCan = 0;
+        curOra = null;
+        selOra1 = null;
+        selOra2 = null;
+        canOra1Sorg = null;
+        canOra2Sorg = null;
+        canOra1Dest = null;
+        canOra2Dest = null;
+        canOra2SorgVuota = new GraphOra();
+        canOra2DestVuota = new GraphOra();
     }
 
-    /***
-    public void setCurrentSpazioLab(int spazio) {
-        curSpazio1 = spazio;
-    }
-    public void setCurrentSpazio2(int spazio) {
-        curSpazio2 = spazio;
-    }
-    public void setCandidatoSpazio2(int spazio) {
-        canSpazio2 = spazio;
-    }
-    public void setSelezioneSpazio2(int spazio) {
-        selSpazio2 = spazio;
-    }
-***/
-    public void setCandidatoSpazioLab(int spazio) {
-        canSpazioLab = spazio;
-    }
-
-    public void setSelezioneSpazioLab(int spazio) {
-        selSpazioLab = spazio;
-    }
-
-    public boolean setCurrent(int giorno, int spazio, ListaOre listaOre) {
-        // non si può impostare l'ora corrente se è solitaria,
-        // la selezione è una catena e non segue l'ora corrente
-        boolean change = false;
-        GraphOra o = listaOre.get(giorno, spazio);
-        GraphOra os = listaOre.get(giorno, spazio+1);
-        if (!( esisteSelezione()
-//           && (selSpazioLab != -1) && (selSpazio2 != -1)
-           && (selSpazioLab != -1)
-           && (o != null) && (o.getSucc() == null) && (o.getPrec() == null)
-           && (os != null) && (os.getSucc() != null)
-           && (giorno != selGiorno) && (spazio+1 != selSpazio) )) {
-                curGiorno = giorno;
-                curSpazio  = spazio;
-//                curSpazio1 = spazio;
-//                curSpazio2 = -1;
-                change = true;
-        }
-//        if ( (idTable == 1) || (idTable == 3) ) {
-                // il numero di ore correnti viene deciso nella tabella del docente o della classe
-//                numSpazCur = 1;
-//                GraphOra ora = listaOre.get(giorno, spazio);
-//                if ((ora != null) && (ora.getSucc() != null)) {
-//                    curSpazioCol = spazio+1;
-/***
-                    do {
-                        numSpazCur++;
-                        spazio++;
-                        ora = ora.getSucc();
-                    } while ( (ora != null) && (ora.getSucc() != null) );
-***/
-//                }
-//                else if ((ora != null) && (ora.getPrec() != null)) {
-//                    curSpazioCol = spazio-1;
-/***
-
-                    do {
-                        numSpazCur++;
-                        spazio--;
-                        ora = ora.getPrec();
-                    } while ( (ora != null) && (ora.getPrec() != null) );
-***/
-//                }
-//        }
-        return change;
-/***
-        if ( (succTableRig != null) && (succTableRig.listaOre != null) )
-            succTableRig.setCurrent(giorno, spazio);
-        if ( (succTableCol != null)  && (succTableCol.listaOre != null) )
-            succTableCol.setCurrent(giorno, spazio);
-*/
-    }
-
-    public void resetCurrent(){
-        curGiorno  = -1;
-        curSpazio  = -1;
-//        curSpazio1 = -1;
-//        curSpazio2 = -1;
-//        numSpazCur = 0;
-/***
-        if (succTableRig != null)
-            succTableRig.resetCurrent();
-        if (succTableCol != null)
-            succTableCol.resetCurrent();
-*/
-    }
-
-    public boolean esisteCurrent(ListaOre listaOre) {
-        if ((curGiorno == -1) || (curSpazio == -1) )
-            return false;
-        else if (listaOre.get(curGiorno, curSpazio) == null)
-            return false;
-        else
+    public boolean setCurrent(GraphOra ora, ListaOre listaOre, int statoRicerca) {
+        // se l'ora corrente è quella selezionata o una delle candidate non si setta
+        if ((ora != null) && (ora != selOra1) && (ora != selOra2)
+                && (ora != canOra1Sorg) && (ora != canOra2Sorg)
+                && (ora != canOra1Dest) && (ora != canOra2Dest)) {
+            resetCurrent(statoRicerca);
+            curOra = ora;
+            curOra.setCorrente();
+            if ( (statoRicerca == 7) || (statoRicerca == 8) ) {
+                setCandidatedDest(ora, listaOre, statoRicerca) ;
+            }
             return true;
-    }
-
-    public void setCandidato(int giorno, int spazio, ListaOre listaOre) {
-        canGiorno  = giorno;
-        canSpazio  = spazio;
-//        numSpazCan = 1;
-        GraphOra ora = listaOre.get(giorno, spazio);
-        if ((ora != null) && (ora.getSucc() != null)) {
-            canSpazioLab = spazio+1;
-//                    canSpazio2 = spazio+1;
-/***
-                    do {
-                        numSpazCan++;
-                        spazio++;
-                        ora = ora.getSucc();
-                    } while ( (ora != null) && (ora.getSucc() != null) );
-***/
         }
-        else if ((ora != null) && (ora.getPrec() != null)) {
-            canSpazioLab = spazio-1;
-//                     canSpazio2 = spazio-1;
-/***
-
-                    do {
-                        numSpazCan++;
-                        spazio--;
-                        ora = ora.getPrec();
-                    } while ( (ora != null) && (ora.getPrec() != null) );
-***/
+        else {
+            resetCurrent(statoRicerca);
         }
-//        }
-/*
-        while ( ((ora = listaOre.get(giorno, spazio)) != null) && (ora.getSucc() != null) ) {
-        numSpazCan++;
-        spazio++;
+
+        return false;
+    }
+
+    public boolean esisteCurrent() {
+        return (curOra != null);
+    }
+
+    public boolean setSelected(GraphOra ora, int statoRicerca) {
+        if (ora != null) {
+            if (canBeSelected(ora)) {
+                // se ora è quella corrente deve essere resettata per evitare
+                // che l'ora sia contemporaneamente corrente e selezionata
+                if (ora == curOra)
+                    resetCurrent(statoRicerca);
+                resetSelected1();
+                selOra1 = ora;
+                selOra1.setSelezionata();
+                return true;
+            }
         }
- */
-/***
-        if ( (succTableRig != null) && (succTableRig.listaOre != null) )
-            succTableRig.setCandidato(giorno, spazio);
-        if ( (succTableCol != null)  && (succTableCol.listaOre != null) )
-            succTableCol.setCandidato(giorno, spazio);
-*/
+        return false;
     }
 
-    public void resetCandidato(){
-        canGiorno  = -1;
-        canSpazio  = -1;
-        canSpazioLab = -1;
-//        canSpazio2 = -1;
-//        numSpazCan = 0;
-/***
-        if (succTableRig != null)
-            succTableRig.resetCandidato();
-        if (succTableCol != null)
-            succTableCol.resetCandidato();
-*/
-    }
-    public boolean esisteCandidato() {
-        if ((canGiorno == -1) || (canSpazio == -1) )
-            return false;
-        else
-            return true;
+    public boolean esisteSelected() {
+        return (selOra1 != null);
     }
 
-    public void setSelezione(int giorno, int spazio) {
-//        if ( (idTable == 1) || (idTable == 3) ) {
-            // il numero di ore selezionate viene deciso nella tabella del docente o della classe
-            selGiorno  = giorno;
-            selSpazio  = spazio;
-//            setSelezioneSpazioLab(spazio);
-
-//            numSpazSel = 1;
-//            GraphOra ora = listaOre.get(giorno, spazio);
-//            if ( (ora != null) && (ora.getSucc() != null) ) {
-//                selSpazioCol = spazio + 1;
-//                numSpazSel++;
-//                spazio++;
-//            } else if ( (ora != null) && (ora.getPrec() != null) ) {
-//                selSpazioCol = spazio - 1;
-//                numSpazSel++;
-//                spazio--;
-//            }
-//        }
-/***
-        if ( (succTableRig != null) && (succTableRig.listaOre != null) )
-            succTableRig.setSelezione(giorno, spazio);
-        if ( (succTableCol != null)  && (succTableCol.listaOre != null) )
-            succTableCol.setSelezione(giorno, spazio);
-*/
+    public boolean canBeSelected(GraphOra ora) {
+        // non si può impostare l'ora selezionata come corrente se
+        // è solitaria o se 
+        // la selezione è la prima di una catena
+        boolean check = false;
+        if (ora != null) {
+            if ((ora.getSucc() == null) && (ora.getPrec() == null)) {
+                resetSelected2();
+                selOra2 = null;
+                check = true;
+            }
+            else if ((ora.getSucc() != null) && (ora.getPrec() == null)) {
+                resetSelected2();
+                selOra2 = ora.getSucc();
+                selOra2.setSelezionata();
+                check = true;
+            }
+        }
+        return check;
     }
 
-    public void resetSelezione(){
-        selGiorno  = -1;
-        selSpazio  = -1;
-//        setSelezioneSpazioLab(-1);
-//        selSpazio2 = -1;
-//        numSpazSel = 0;
-/***
-        if (succTableRig != null)
-            succTableRig.resetSelezione();
-        if (succTableCol != null)
-            succTableCol.resetSelezione();
-**/
+    public boolean setCandidatedDest(GraphOra ora, ListaOre listaOre, int statoRicerca) {
+        if (ora != null) {
+            if (canBeCandidatedDest(ora, listaOre)) {
+                resetCandidated1Dest();
+                canOra1Dest = ora;
+                canOra1Dest.setCandidata();
+                return true;
+            }
+        }
+        return false;
     }
-    public boolean esisteSelezione() {
-        if ((selGiorno == -1) || (selSpazio == -1) )
-            return false;
-        else
-            return true;
+
+    public boolean canBeCandidatedDest(GraphOra ora, ListaOre listaOre) {
+        boolean check = false;
+        if (ora != null) {
+        // si può candidare se è solitaria e la selezione è solitaria
+            if ((selOra2 == null) && (ora.getSucc() == null) && (ora.getPrec() == null)) {
+                resetCandidated2Dest();
+                canOra2Dest = null;
+                check = true;
+            }
+            if ((selOra2 == null) && (ora.getSucc() == null) && (ora.getPrec() == null)) {
+        // se la selezione è doppia e 
+            }
+            else if (selOra2 != null) {
+        // la candidata è anch'essa la prima ora di una catena
+                if ((ora.getSucc() != null) && (ora.getPrec() == null)) {
+                    resetCandidated2Dest();
+                    canOra2Dest = ora.getSucc();
+                    canOra2Dest.setCandidata();
+                    check = true;
+                }
+        // la candidata è anch'essa la seconda ora di una catena
+                else if ((ora.getSucc() == null) && (ora.getPrec() != null)) {
+                    resetCandidated2Dest();
+                    canOra2Dest = ora.getPrec();
+                    canOra2Dest.setCandidata();
+                    check = true;
+                }
+        // la candidata è solitaria
+                else if ((ora.getSucc() == null) && (ora.getPrec() == null)) {
+                    GraphOra sucOra = listaOre.get(ora.giorno, ora.spazio+1);
+        // e la sua seguente è solitaria
+                    if ((sucOra != null) && (sucOra.getSucc() == null) && (sucOra.getPrec() == null)) {
+                        resetCandidated2Dest();
+                        canOra2Dest = sucOra;
+                        canOra2Dest.setCandidata();
+                        check = true;
+                    }
+                    else if ((sucOra == null) && (ora.spazio < 6)){
+        // e la sua seguente non esiste
+                        resetCandidated2Dest();
+                        canOra2Dest = canOra2DestVuota;
+                        canOra2DestVuota.giorno = ora.giorno;
+                        canOra2DestVuota.spazio = ora.spazio;
+                        canOra2Dest.setCandidata();
+                        check = true;
+                    }
+                }
+            }
+        }
+        return check;
     }
+
+    public void resetAll(){
+        if (curOra != null)
+            curOra.resetAll();
+        curOra = null;
+        if (selOra1 != null)
+            selOra1.resetAll();
+        selOra1 = null;
+        if (selOra2 != null)
+            selOra2.resetAll();
+        selOra2 = null;
+        if (canOra1Sorg != null)
+            canOra1Sorg.resetAll();
+        canOra1Sorg = null;
+        if (canOra2Sorg != null)
+            canOra2Sorg.resetAll();
+        canOra2Sorg = null;
+        if (canOra1Dest != null)
+            canOra1Dest.resetAll();
+        canOra1Dest = null;
+        if (canOra2Dest != null)
+            canOra2Dest.resetAll();
+        canOra2Dest = null;
+    }
+
+    public void resetCurrent(int statoRicerca){
+        if (curOra != null)
+            curOra.resetCorrente();
+        curOra = null;
+        if ( (statoRicerca == 7)
+          || (statoRicerca == 8) ) {
+                resetCandidated1Dest();
+                resetCandidated2Dest();
+            }
+
+    }
+
+    public void resetSelected1(){
+        if (selOra1 != null)
+            selOra1.resetSelezionata();
+        selOra1 = null;
+    }
+
+    public void resetSelected2(){
+        if (selOra2 != null)
+            selOra2.resetSelezionata();
+        selOra2 = null;
+    }
+
+    public void resetCandidated1Sorg(){
+        if (canOra1Sorg != null)
+            canOra1Sorg.resetCandidata();
+        canOra1Sorg = null;
+    }
+
+    public void resetCandidated2Sorg(){
+        if (canOra2Sorg != null)
+            canOra2Sorg.resetCandidata();
+        canOra2Sorg = null;
+    }
+
+    public void resetCandidated1Dest(){
+        if (canOra1Dest != null)
+            canOra1Dest.resetCandidata();
+        canOra1Dest = null;
+    }
+
+    public void resetCandidated2Dest(){
+        if (canOra2Dest != null)
+            canOra2Dest.resetCandidata();
+        canOra2Dest = null;
+    }
+
 }

@@ -20,15 +20,13 @@ public class Ora {
     protected Aula    aula;
     private   Ora     succ; // se != null non deve separarsi dalla successiva
     private   Ora     prec; // se != null non deve separarsi dalla precedente
-    protected int     selezionata; // 0:no 1:prima 2:seconda
+    protected boolean candidata;
+    protected boolean corrente;
+    protected boolean selezionata;
     protected int     adattaScambio; // -2: no scambio -1: si scambio
     static  public int     NONCALCOLATO = 0;
-    static  public int     NOSCAMBIO = -2;
-    static  public int     SISCAMBIO = -1;
-    static  public int     NONSEL    =  0;
-    static  public int     PRIMA     =  1;
-    static  public int     SECONDA   =  2;
-    static  public int     TERZA     =  3;
+    static  public int     NOSCAMBIO    = -1;
+    static  public int     SISCAMBIO    = 1;
 
     protected Docente docenteConProblemi;
 
@@ -43,7 +41,9 @@ public class Ora {
         aula    = null;
         succ    = null;
         prec    = null;
-        selezionata = NONSEL;
+        candidata = false;
+        corrente = false;
+        selezionata = false;
         adattaScambio = NONCALCOLATO;
         docenteConProblemi = null;
     }
@@ -59,7 +59,9 @@ public class Ora {
         aula    = null;
         succ    = null;
         prec    = null;
-        selezionata = NONSEL;
+        candidata = false;
+        corrente = false;
+        selezionata = false;
         adattaScambio = NONCALCOLATO;
         docenteConProblemi = null;
     }
@@ -78,31 +80,73 @@ public class Ora {
 //        aula.addOra(this);
         succ    = null;
         prec    = null;
-        selezionata = NONSEL;
+        candidata = false;
+        corrente = false;
+        selezionata = false;
         adattaScambio = NONCALCOLATO;
         docenteConProblemi = null;
     }
 
-    public void setSelezionata(int val) {
-        selezionata = val;
+    public void setCandidata() {
+        candidata = true;
+    }
+    public void resetCandidata() {
+        candidata = false;
+    }
+    public boolean isCandidata() {
+        return candidata;
     }
 
-    public int getSelezionata() {
+    public void setCorrente() {
+        corrente = true;
+    }
+    public void resetCorrente() {
+        corrente = false;
+    }
+    public boolean isCorrente() {
+        return corrente;
+    }
+
+    public void setSelezionata() {
+        selezionata = true;
+    }
+    public void resetSelezionata() {
+        selezionata = false;
+    }
+    public boolean isSelezionata() {
         return selezionata;
+    }
+
+    public void resetAll() {
+        candidata = false;
+        corrente = false;
+        selezionata = false;
+    }
+
+    public void setScambio(int val) {
+        adattaScambio = val;
+    }
+    public int getScambio() {
+        return adattaScambio;
+    }
+
+    public Classe getClasse() {
+        return classe;
+    }
+    public void setClasse(Classe val) {
+        classe = val;
     }
 
     public void setSucc(Ora o) {
         succ = o;
     }
-
-    public void setPrec(Ora o) {
-        prec = o;
-    }
-
     public Ora getSucc() {
         return succ;
     }
 
+    public void setPrec(Ora o) {
+        prec = o;
+    }
     public Ora getPrec() {
         return prec;
     }

@@ -72,7 +72,7 @@ public class SecondWindow extends JPanel implements MouseListener, MouseMotionLi
             tabDocColl.setList(docWindow, GestOrarioApplet.TIPODOCENTE, GestOrarioApplet.infoMatDocAule);
             tabDocColl.setVisible(true);
             selCorWin = new SelCorOre();
-            selCorWin.setSelezione(o.giorno, o.spazio);
+            selCorWin.setSelected(o, 0);
             tabDocColl.setNewStatoRicerca(selCorWin, docWindow);
 
             tabDocColl.setSuccTableRig(tabClasseDocColl);

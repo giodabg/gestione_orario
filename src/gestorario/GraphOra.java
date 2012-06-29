@@ -110,24 +110,32 @@ public class GraphOra extends Ora {
         int [] ypoints = new int[4];
         int meno;
         if (sel == NOSCAMBIO) {
-            meno = 15;
-//            g.setColor(new Color(125, 125, 125, 175));
-            g.setColor(Color.BLACK);
-            xpoints[0] = x+meno;           xpoints[1] = x+alt-meno;
-            ypoints[0] = y+meno;           ypoints[1] = y+meno;
-            xpoints[2] = x+(largh+meno)/2;
-            ypoints[2] = y+(alt)/2;
-            g.fillPolygon(xpoints, ypoints, 3);
+            g.setColor(new Color(45, 45, 45, 140));
+            g.fillRect(x+6, y+12, alt-12, largh-18);
+            g.setColor(Color.WHITE);
+            g.drawRect(x+6, y+12, alt-12, largh-18);
+
+//            meno = 15;
+//            g.setColor(Color.BLACK);
+//            xpoints[0] = x+meno;           xpoints[1] = x+alt-meno;
+//            ypoints[0] = y+meno;           ypoints[1] = y+meno;
+//            xpoints[2] = x+(largh+meno)/2;
+//            ypoints[2] = y+(alt)/2;
+//            g.fillPolygon(xpoints, ypoints, 3);
         }
         else if (sel == SISCAMBIO) {
-            meno = 10;
-//            g.setColor(new Color(75, 75, 75, 175));
-            g.setColor(Color.PINK);
-            xpoints[0] = x+meno;           xpoints[1] = x+alt-meno;
-            ypoints[0] = y+meno;           ypoints[1] = y+meno;
-            xpoints[2] = x+meno;           xpoints[3] = x+alt-meno;
-            ypoints[2] = y+largh-meno+1;   ypoints[3] = y+largh-meno+1;
-            g.fillPolygon(xpoints, ypoints, 4);
+            g.setColor(Color.BLACK);
+            g.fillRect(x+6, y+12, alt-12, largh-18);
+            g.setColor(Color.WHITE);
+            g.drawRect(x+6, y+12, alt-12, largh-18);
+
+//            meno = 10;
+//            g.setColor(Color.PINK);
+//            xpoints[0] = x+meno;           xpoints[1] = x+alt-meno;
+//            ypoints[0] = y+meno;           ypoints[1] = y+meno;
+//            xpoints[2] = x+meno;           xpoints[3] = x+alt-meno;
+//            ypoints[2] = y+largh-meno+1;   ypoints[3] = y+largh-meno+1;
+//            g.fillPolygon(xpoints, ypoints, 4);
         }
     }
     // info = 0 vuota
@@ -152,33 +160,38 @@ public class GraphOra extends Ora {
         g.setColor(Color.black);
         g.drawRect(x, y, alt, largh);
 
-        // visualizza nome della classe associata all'ora
-        if (info == 1) {
-            g.setColor(Color.BLACK);
-            g.drawString(classe.nome, x+6 ,y+2+g.getFont().getSize());
-        }
-
-        if (selezionata == NOSCAMBIO) {
+        if (adattaScambio == NOSCAMBIO) {
             // evidenzio la cella come non adatta allo scambio (vedi anche GraphTable)
             paintScambio(g, x, y, alt, largh, NOSCAMBIO);
         }
-        if (selezionata == SISCAMBIO) {
+        else if (adattaScambio == SISCAMBIO) {
             // evidenzio la cella come adatta allo scambio (vedi anche GraphTable)
             paintScambio(g, x, y, alt, largh, SISCAMBIO);
         }
-        if (selezionata == PRIMA) {
+
+        if (selezionata) {
             g.drawRect(x+3, y+3, alt-6, largh-6);
 //            g.setColor(new Color(colore.getRed(), colore.getGreen(), colore.getBlue(), 125));
 //            g.setColor(new Color(255, 150, 0, 125));
             g.setColor(Color.ORANGE);
             g.fill3DRect(x+4, y+4, alt-7, largh-7, true);
         }
-        if (selezionata == SECONDA) {
+        if (candidata) {
             g.drawRect(x+3, y+3, alt-6, largh-6);
 //            g.setColor(new Color(colore.getRed(), colore.getGreen(), colore.getBlue(), 125));
 //            g.setColor(new Color(255, 0, 150, 125));
             g.setColor(Color.YELLOW);
             g.fill3DRect(x+4, y+4, alt-7, largh-7, false);
+        }
+        if (corrente) {
+//            g.drawRect(x+3, y+3, alt-6, largh-6);
+//            g.setColor(new Color(colore.getRed(), colore.getGreen(), colore.getBlue(), 125));
+//            g.setColor(new Color(255, 150, 0, 125));
+            g.setColor(Color.GREEN);
+            g.drawRect(x+1, y+1, alt-2, largh-2);
+            g.drawRect(x+2, y+2, alt-4, largh-4);
+            g.drawRect(x+3, y+3, alt-6, largh-6);
+//            g.fill3DRect(x+4, y+4, alt-7, largh-7, true);
         }
         // disegno linee per ore di compresenza
         // prima di due
@@ -202,6 +215,12 @@ public class GraphOra extends Ora {
             g.setColor(Color.GREEN);
             g.drawLine(x+4, y+10,x+4, y+largh-10);
         }
+        // visualizza nome della classe associata all'ora
+        if (info == 1) {
+            g.setColor(Color.BLACK);
+            g.drawString(classe.nome, x+6 ,y+2+g.getFont().getSize());
+        }
+
     }
 
     public void paintInfo (Graphics g, int x, int y, boolean tutte) {

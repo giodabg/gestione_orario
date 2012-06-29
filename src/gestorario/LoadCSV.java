@@ -49,7 +49,7 @@ public class LoadCSV {
             String line;
             while ((line = br.readLine()) != null) {
                 lineNumber++;
-//				System.out.println(line);
+                            System.out.println(line);
                 //break comma separated line using ","
                 st = new StringTokenizer(line, ",");
                 ArrayList<String> riga = new ArrayList<String>();
@@ -57,8 +57,8 @@ public class LoadCSV {
                     tokenNumber++;
                     String s = st.nextToken().trim();
                     riga.add(s);
-//                                System.out.println("Line # " + lineNumber +
-//                                        ", Token # " + tokenNumber + ", Token : " + s);
+                                System.out.println("Line # " + lineNumber +
+                                        ", Token # " + tokenNumber + ", Token : " + s);
                 }
                 tabella[nDoc] = riga;
                 nDoc++;
@@ -83,6 +83,8 @@ public class LoadCSV {
             String nomeFile = GestOrarioApplet.workDir+"\\orarioDopoScambio"+numSave+".csv";
             bufferedWriter = new BufferedWriter(new FileWriter(nomeFile));
             bufferedWriter.write("Intestazione, linea1");
+            bufferedWriter.newLine();
+            bufferedWriter.write("Intestazione, linea2");
             bufferedWriter.newLine();
 
             //Start writing to the output stream
@@ -142,8 +144,8 @@ public class LoadCSV {
         int numRig = 100;
         int numCol = 37;
         ArrayList<String> riga1 = null, riga2 = null;
-        // inizio dalla riga 3 perché si saltano le intestazioni
-        for (int i = 2; i < nDoc; i++) {
+        // inizio dalla riga 4 perché si saltano le intestazioni
+        for (int i = 3; i < nDoc; i++) {
               System.out.println("**************** "+i+" **********************");
 //            int i = 16;
             riga1 = getRiga(i);
@@ -170,7 +172,7 @@ public class LoadCSV {
                         Aula a;
                         String sTeo = riga1.get(1 + oo - 1 + (gg - 1) * 6);
                         String sLab = riga2.get(1 + oo - 1 + (gg - 1) * 6);
-//                        System.out.print(sTeo + " = ");
+                                System.out.print(sTeo + " = ");
                         if (sLab.equalsIgnoreCase("")) {
                             m = d.getMateria();
                             a = infoMatDocClassAule.getAula(sTeo);
@@ -199,7 +201,7 @@ public class LoadCSV {
                         } else {
                             Classe cl = infoMatDocClassAule.getClasse(sTeo);
                             if (cl == null) {
-//                                System.out.println("Classe da creare:" + sTeo);
+                                      System.out.println("Classe da creare:" + sTeo);
                                 cl = new Classe(sTeo);
                                 infoMatDocClassAule.infoClassi.add(cl);
                             }
@@ -214,7 +216,7 @@ public class LoadCSV {
                                     o.setDocComp(d);
                             } else {
                                 // ora già creata con un docente
-                                System.out.println(cl.nome+" giorno "+gg+" ora "+oo+" aggiungo "+ d.nome);
+                                        System.out.println(cl.nome+" giorno "+gg+" ora "+oo+" aggiungo "+ d.nome);
                                 if (d.tipo == Docente.TEORICO) {
                                     if (o.setDoc(d) == false)
                                         o.setDocComp(d);
@@ -245,7 +247,7 @@ public class LoadCSV {
                     }
                 }
                 i++;  // salto riga di laboratorio
-//                System.out.println("");
+                       System.out.println("");
             } else if (riga1 != null) {
                 // riga normale di un docente senza laboratorio
                 Color cTeo = new Color(100, 100, 100, 100);
@@ -264,7 +266,7 @@ public class LoadCSV {
                 for (int gg = 1; gg <= 6; gg++) {
                     for (int oo = 1; oo <= 6; oo++) {
                         String sTeo = riga1.get(1 + oo - 1 + (gg - 1) * 6);
-//                        System.out.print(sTeo + " = ");
+                                System.out.print(sTeo + " = ");
                         Aula a;
                         m = d.getMateria();
                         a = infoMatDocClassAule.getAula(sTeo);
@@ -298,7 +300,7 @@ public class LoadCSV {
                                     o.setDocComp(d);
                             } else {
                                 // ora già creata con un docente
-                                System.out.println(cl.nome+" giorno "+gg+" ora "+oo+" aggiungo "+ d.nome);
+                                      System.out.println(cl.nome+" giorno "+gg+" ora "+oo+" aggiungo "+ d.nome);
                                 if (d.tipo == Docente.TEORICO) {
                                     if (o.setDoc(d) == false)
                                         o.setDocComp(d);
@@ -311,7 +313,7 @@ public class LoadCSV {
                         }
                     }
                 }
-//                System.out.println("");
+                        System.out.println("");
             }
         }
     }

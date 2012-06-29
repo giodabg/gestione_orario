@@ -95,7 +95,8 @@ public class Aula {
          */
          if ( (!listaOre.add(o)) && !(nome.equalsIgnoreCase("O")) ) {
             GraphOra oo = listaOre.get(o.giorno, o.spazio);
-            String str = "Nell'aula "+nome+", nel giorno "+o.giorno+" l'ora "+o.spazio+" è già assegnata a "+o.classe.nome;
+            String str = "Nell'aula "+nome+", nel giorno "+o.giorno+" l'ora "+o.spazio;
+            str += " non può essere assegnata a "+o.classe.nome+" perchè c'è già la "+oo.classe.nome;
             System.out.println(str);
             JOptionPane.showMessageDialog(null, str);
 

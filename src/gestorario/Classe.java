@@ -42,6 +42,13 @@ public class Classe {
             sezione = 'O';
             indirizzo = 'O';
         }
+        else if (s.equalsIgnoreCase("R")) {
+            nome = "AltraSc";
+            idClasse = lastID; lastID++;
+            anno = 1;
+            sezione = 'R';
+            indirizzo = 'R';
+        }
         else {
             idClasse = lastID; lastID++;
             anno = s.charAt(0) - '0';
@@ -82,7 +89,8 @@ public class Classe {
          */
         if (!listaOre.add(o)) {
             GraphOra oo = listaOre.get(o.giorno, o.spazio);
-            String str = "Nella classe "+nome+", nel giorno "+o.giorno+" l'ora "+o.spazio+" è già assegnata a ";
+            String str = "Nella classe "+nome+", nel giorno "+o.giorno+" l'ora "+o.spazio;
+            str += " non può essere assegnata a "+o.classe.nome+" perchè c'è già ";
             if (oo.getDoc() != null) {
                 str += oo.getDoc().nome;
             }
@@ -183,6 +191,8 @@ public class Classe {
             return 2;
         else if (ind.equalsIgnoreCase("Liceo"))
             return 3;
+        else if (ind.equalsIgnoreCase("Biennio"))
+            return 4;
         else
             return 0;
     }
