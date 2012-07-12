@@ -18,8 +18,8 @@ public class Ora {
     protected boolean bloccata;
     protected Materia materia;
     protected Aula    aula;
-    private   Ora     succ; // se != null non deve separarsi dalla successiva
-    private   Ora     prec; // se != null non deve separarsi dalla precedente
+    protected Ora     succ; // se != null non deve separarsi dalla successiva
+    protected Ora     prec; // se != null non deve separarsi dalla precedente
     protected boolean candidata;
     protected boolean corrente;
     protected boolean selezionata;
@@ -31,18 +31,18 @@ public class Ora {
     protected Docente docenteConProblemi;
 
     Ora() {
-        giorno  = 0;
-        spazio  = 0;
-        classe  = null;
-        docente = null;
-        docenteCom = null;
-        bloccata = false;
-        materia = null;
-        aula    = null;
-        succ    = null;
-        prec    = null;
-        candidata = false;
-        corrente = false;
+        giorno      = 0;
+        spazio      = 0;
+        classe      = null;
+        docente     = null;
+        docenteCom  = null;
+        bloccata    = false;
+        materia     = null;
+        aula        = null;
+        succ        = null;
+        prec        = null;
+        candidata   = false;
+        corrente    = false;
         selezionata = false;
         adattaScambio = NONCALCOLATO;
         docenteConProblemi = null;

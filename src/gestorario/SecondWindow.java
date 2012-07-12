@@ -60,20 +60,20 @@ public class SecondWindow extends JPanel implements MouseListener, MouseMotionLi
 
 
             Frame frameApplet = (Frame)SwingUtilities.getAncestorOfClass(Frame.class, this);
-            tabDocColl       = new GraphTable(1, 6, 6, 50, 38, xTabDocColl,   yTabDocColl,    this, 1, frameApplet);
-            tabClasseDocColl = new GraphTable(3, 6, 6, 50, 38, xTabClasseDocColl,yTabClasseDocColl, this, 1, frameApplet);
+            tabDocColl       = new GraphTable(1, 6, 6, 50, 38, xTabDocColl,   yTabDocColl,    this, 1, frameApplet, selCorWin);
+            tabClasseDocColl = new GraphTable(3, 6, 6, 50, 38, xTabClasseDocColl,yTabClasseDocColl, this, 1, frameApplet, selCorWin);
 
-            tabDocComp       = new GraphTable(2, 6, 6, 50, 38, xTabDocComp,   yTabDocComp,    this, 1, frameApplet);
-            tabLabDocColl    = new GraphTable(4, 6, 6, 50, 38, xTabLabDocColl,yTabLabDocColl, this, 1, frameApplet);
+            tabDocComp       = new GraphTable(2, 6, 6, 50, 38, xTabDocComp,   yTabDocComp,    this, 1, frameApplet, selCorWin);
+            tabLabDocColl    = new GraphTable(4, 6, 6, 50, 38, xTabLabDocColl,yTabLabDocColl, this, 1, frameApplet, selCorWin);
 
-            tabDocScam       = new GraphTable(5, 6, 6, 50, 38, xTabDocScam,   yTabDocScam,    this, 1, frameApplet);
-            tabDocScamComp   = new GraphTable(6, 6, 6, 50, 38, xTabDocScamComp,yTabDocScamComp, this, 1, frameApplet);
+            tabDocScam       = new GraphTable(5, 6, 6, 50, 38, xTabDocScam,   yTabDocScam,    this, 1, frameApplet, selCorWin);
+            tabDocScamComp   = new GraphTable(6, 6, 6, 50, 38, xTabDocScamComp,yTabDocScamComp, this, 1, frameApplet, selCorWin);
 
             tabDocColl.setList(docWindow, GestOrarioApplet.TIPODOCENTE, GestOrarioApplet.infoMatDocAule);
             tabDocColl.setVisible(true);
             selCorWin = new SelCorOre();
             selCorWin.setSelected(o, 0);
-            tabDocColl.setNewStatoRicerca(selCorWin, docWindow);
+            tabDocColl.setNewStatoRicerca(docWindow);
 
             tabDocColl.setSuccTableRig(tabClasseDocColl);
             tabDocColl.setSuccTableCol(tabDocComp);
@@ -94,12 +94,12 @@ public class SecondWindow extends JPanel implements MouseListener, MouseMotionLi
 @Override
     public void paintComponent(Graphics g) {
             g.clearRect(0, 0, 1400, 900);
-            tabDocColl.paintTabella(g, selCorWin);
-            tabClasseDocColl.paintTabella(g, selCorWin);
-            tabDocComp.paintTabella(g, selCorWin);
-            tabLabDocColl.paintTabella(g, selCorWin);
-            tabDocScam.paintTabella(g, selCorWin);
-            tabDocScamComp.paintTabella(g, selCorWin);
+            tabDocColl.paintTabella(g);
+            tabClasseDocColl.paintTabella(g);
+            tabDocComp.paintTabella(g);
+            tabLabDocColl.paintTabella(g);
+            tabDocScam.paintTabella(g);
+            tabDocScamComp.paintTabella(g);
     }
 
       private void actionTorna() {
@@ -124,7 +124,25 @@ public class SecondWindow extends JPanel implements MouseListener, MouseMotionLi
 
     private boolean mustRepaintTab(MouseEvent e, GraphTable tab) {
         if (tab.getVisible() && mouseInTabella(e, tab) ) {
-           if (tab.cambiaOraCorrente(e, selCorWin, docWindow)) {
+            int newCurGiorno;
+            int newCurSpazio;
+            int curx = -1;
+            int cury = -1;
+            if ( ((e.getX() - tab.getShiftX()) < 0)
+              || ((e.getY() - tab.getShiftY()) < 0)
+              || ((e.getX() - tab.getShiftX()) > (tab.getColonne()) * tab.getB())
+              || ((e.getY() - tab.getShiftY()) > (tab.getRighe()) * tab.getH()) ) {
+                newCurGiorno = newCurSpazio = -1;
+            }
+            else {
+                curx = (e.getX() - tab.getShiftX()) - (e.getX() - tab.getShiftX()) % tab.getB();
+                cury = (e.getY() - tab.getShiftY()) - (e.getY() - tab.getShiftY()) % tab.getH();
+
+                newCurGiorno = (curx / tab.getB()) + 1;
+                newCurSpazio = (cury / tab.getH()) + 1;
+            }
+
+           if (tab.cambiaOraCorrente(newCurGiorno, newCurSpazio, curx, cury, docWindow)) {
                return true;
            }
         }
@@ -155,7 +173,7 @@ public class SecondWindow extends JPanel implements MouseListener, MouseMotionLi
             && (e.getX() < tab.getShiftX() + (tab.getB() * tab.getColonne()))
             && (e.getY() > tab.getShiftY())
             && (e.getY() < tab.getShiftY() + (tab.getH() * tab.getRighe()))) {
-               tab.selezione(e, docWindow, selCorWin);
+               tab.selezione(e, docWindow);
                repaint();
                return true;
             }

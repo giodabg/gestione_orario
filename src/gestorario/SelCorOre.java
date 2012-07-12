@@ -10,28 +10,29 @@ package gestorario;
  * @author Gio
  */
 public class SelCorOre {
-    GraphOra curOra;  // giorno corrente (mouse over)
-    GraphOra selOra1;  // giorno selezionato prima ora
-    GraphOra selOra2;  // giorno selezionato seconda ora
+    GraphOra curOra;        // ora corrente (mouse over)
 
-    GraphOra canOra1Sorg;  // giorno candidato prima ora
-    GraphOra canOra2Sorg;  // giorno candidato seconda ora
+    GraphOra selOra1;       // giorno selezionato prima ora
+    GraphOra selOra2;       // giorno selezionato seconda ora
 
-    GraphOra canOra1Dest;  // giorno candidato prima ora
-    GraphOra canOra2Dest;  // giorno candidato seconda ora
+    GraphOra canOra1Sorg;   // giorno candidato prima ora
+    GraphOra canOra2Sorg;   // giorno candidato seconda ora
+
+    GraphOra canOra1Dest;   // giorno candidato prima ora
+    GraphOra canOra2Dest;   // giorno candidato seconda ora
 
     static GraphOra canOra2SorgVuota;
     static GraphOra canOra2DestVuota;
 
 
     SelCorOre () {
-        curOra = null;
-        selOra1 = null;
-        selOra2 = null;
-        canOra1Sorg = null;
-        canOra2Sorg = null;
-        canOra1Dest = null;
-        canOra2Dest = null;
+        curOra           = null;
+        selOra1          = null;
+        selOra2          = null;
+        canOra1Sorg      = null;
+        canOra2Sorg      = null;
+        canOra1Dest      = null;
+        canOra2Dest      = null;
         canOra2SorgVuota = new GraphOra();
         canOra2DestVuota = new GraphOra();
     }

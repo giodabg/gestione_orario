@@ -15,47 +15,50 @@ import javax.swing.*; // dialog box
  */
 public class Aula {
 
-    static int lastID = 0;
-    int    idAula;
-    String nome;
+    static int lastID = 0;       // ultimo id utilizzato unico per tutte le aule
+    int    idAula;                  // identificatore univoco dell'aula
+    String nome;                    // nome/sigla dell'aula uguale alla classe
+                                    // solo se di suo utilizzo esclusivo
     int    edificio;                // 1=ITC 2=ITIS 3=INF
-    int    piano;
+    int    piano;                   // -1 interrato, 0 terra, ...
     int    lato;                    // 0=nord 1=est 2=sud 3=ovest
     int    tipo;                    // 0=normale 1=lab 2=palestra
-    Vector materie;                 // materie a cui l'aula è adatta
-    ListaOre    listaOre;
-    int    hFont;
-    Color  colore;
+    Vector      materie;            // materie a cui l'aula è adatta
+    ListaOre    listaOre;           // ore in cui è occupata
+                                    // inserendo un'ora vuota si impedisce
+                                    // la sua occupazione da parte di qualcuno
+    int    hFont;                   // carattere per le visualizzazioni
+    Color  colore;                  // colore per le visualizzazioni
 
     Aula(String n) {
         idAula = lastID; lastID++;
         nome = n;
-        edificio = 2;
-        piano = 1;
-        lato = 2;
+        edificio = 1;
+        piano = 0;
+        lato = 0;
         tipo = 0;
-        materie = new Vector();
-        listaOre = new ListaOre();
+        materie = new Vector();     // predispongo un vettore vuoto
+        listaOre = new ListaOre();  // predispongo un vettore vuoto
         hFont = 20;
         colore = Color.darkGray;
     }
 
     Aula(int id, String n, int e, int p, int l, int t, String m, Color c) {
-        idAula = id;
-        nome = n;
-        edificio = e;
-        piano = p;
-        lato = l;
-        tipo = t;
-        materie = new Vector();
+        idAula      = id;
+        nome        = n;
+        edificio    = e;
+        piano       = p;
+        lato        = l;
+        tipo        = t;
+        materie     = new Vector();
         materie.add(m);
-        listaOre = new ListaOre();
-        /*
+        listaOre    = new ListaOre();
+        /* creo ogni ora teoricamente possibile
         for (int g = 1; g <= GestOrarioApplet.maxNumGiorni; g++) {
-        for (int s = 1; s <= GestOrarioApplet.maxNumSpazi; s++) {
-        listaOre.addOra(new GraphOra(g, s, null, GestOrarioApplet.d0,
-        GestOrarioApplet.m0, GestOrarioApplet.a0, GestOrarioApplet.c0));
-        }
+            for (int s = 1; s <= GestOrarioApplet.maxNumSpazi; s++) {
+                listaOre.addOra(new GraphOra(g, s, null, GestOrarioApplet.d0,
+                    GestOrarioApplet.m0, GestOrarioApplet.a0, GestOrarioApplet.c0));
+            }
         }
         */
         hFont = 20;

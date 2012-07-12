@@ -5,9 +5,8 @@
 
 package gestorario;
 
-import java.awt.*;  //grafica
-import java.util.Vector;
-import javax.swing.*; // dialog box
+import java.awt.*;      // grafica
+import javax.swing.*;   // dialog box
     /**
  *
  * @author Gio

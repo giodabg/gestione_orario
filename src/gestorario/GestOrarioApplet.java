@@ -128,14 +128,14 @@ public class GestOrarioApplet extends Applet implements MouseListener, MouseMoti
 
 
         Frame frameApplet = (Frame)SwingUtilities.getAncestorOfClass(Frame.class, this);
-        tabDocColl       = new GraphTable(1, 6, 6, 50, 38, xTabDocColl,   yTabDocColl,    this, 0, frameApplet);
-        tabClasseDocColl = new GraphTable(3, 6, 6, 50, 38, xTabClasseDocColl,yTabClasseDocColl, this, 0, frameApplet);
+        tabDocColl       = new GraphTable(1, 6, 6, 50, 38, xTabDocColl,   yTabDocColl,    this, 0, frameApplet, selCorApplet);
+        tabClasseDocColl = new GraphTable(3, 6, 6, 50, 38, xTabClasseDocColl,yTabClasseDocColl, this, 0, frameApplet, selCorApplet);
 
-        tabDocComp       = new GraphTable(2, 6, 6, 50, 38, xTabDocComp,   yTabDocComp,    this, 0, frameApplet);
-        tabLabDocColl    = new GraphTable(4, 6, 6, 50, 38, xTabLabDocColl,yTabLabDocColl, this, 0, frameApplet);
+        tabDocComp       = new GraphTable(2, 6, 6, 50, 38, xTabDocComp,   yTabDocComp,    this, 0, frameApplet, selCorApplet);
+        tabLabDocColl    = new GraphTable(4, 6, 6, 50, 38, xTabLabDocColl,yTabLabDocColl, this, 0, frameApplet, selCorApplet);
 
-        tabDocScam       = new GraphTable(5, 6, 6, 50, 38, xTabDocScam,   yTabDocScam,    this, 0, frameApplet);
-        tabDocScamComp   = new GraphTable(6, 6, 6, 50, 38, xTabDocScamComp,yTabDocScamComp, this, 0, frameApplet);
+        tabDocScam       = new GraphTable(5, 6, 6, 50, 38, xTabDocScam,   yTabDocScam,    this, 0, frameApplet, selCorApplet);
+        tabDocScamComp   = new GraphTable(6, 6, 6, 50, 38, xTabDocScamComp,yTabDocScamComp, this, 0, frameApplet, selCorApplet);
 
         tabDocColl.setList(docApplet, TIPODOCENTE, infoMatDocAule);
         tabDocColl.setVisible(true);
@@ -187,12 +187,12 @@ public class GestOrarioApplet extends Applet implements MouseListener, MouseMoti
             // l'ordine di visualizzazione è importante perchè ogni tabella
             // decide se la prossima è da visualizzare
             // e tutto viene scatenato dalla prima tabella
-            tabDocColl.paintTabella(g, selCorApplet);
-            tabClasseDocColl.paintTabella(g, selCorApplet);
-            tabDocComp.paintTabella(g, selCorApplet);
-            tabLabDocColl.paintTabella(g, selCorApplet);
-            tabDocScam.paintTabella(g, selCorApplet);
-            tabDocScamComp.paintTabella(g, selCorApplet);
+            tabDocColl.paintTabella(g);
+            tabClasseDocColl.paintTabella(g);
+            tabDocComp.paintTabella(g);
+            tabLabDocColl.paintTabella(g);
+            tabDocScam.paintTabella(g);
+            tabDocScamComp.paintTabella(g);
     }
 
     private boolean mouseInTabella(MouseEvent e, GraphTable tab) {
@@ -210,9 +210,26 @@ public class GestOrarioApplet extends Applet implements MouseListener, MouseMoti
             return false;
     }
 
-    private boolean mustRepaintTab(MouseEvent e, GraphTable tab) {
+    private boolean mustRepaintTab(MouseEvent e, GraphTable tab, int idTab) {
         if (tab.getVisible() && mouseInTabella(e, tab) ) {
-           if (tab.cambiaOraCorrente(e, selCorApplet, docApplet)) {
+            int newCurGiorno;
+            int newCurSpazio;
+            int curx = -1;
+            int cury = -1;
+            if ( ((e.getX() - tab.getShiftX()) < 0)
+              || ((e.getY() - tab.getShiftY()) < 0)
+              || ((e.getX() - tab.getShiftX()) > (tab.getColonne()) * tab.getB())
+              || ((e.getY() - tab.getShiftY()) > (tab.getRighe()) * tab.getH()) ) {
+                newCurGiorno = newCurSpazio = -1;
+            }
+            else {
+                curx = (e.getX() - tab.getShiftX()) - (e.getX() - tab.getShiftX()) % tab.getB();
+                cury = (e.getY() - tab.getShiftY()) - (e.getY() - tab.getShiftY()) % tab.getH();
+
+                newCurGiorno = (curx / tab.getB()) + 1;
+                newCurSpazio = (cury / tab.getH()) + 1;
+            }
+           if (tab.cambiaOraCorrente(newCurGiorno, newCurSpazio, curx, cury, docApplet)) {
                repaint();
                return true;
            }
@@ -221,12 +238,12 @@ public class GestOrarioApplet extends Applet implements MouseListener, MouseMoti
     }
 
     public void mouseMoved(MouseEvent e) {
-        if ( mustRepaintTab(e, tabDocColl)
-          || mustRepaintTab(e, tabClasseDocColl)
-          || mustRepaintTab(e, tabDocComp)
-          || mustRepaintTab(e, tabLabDocColl)
-          || mustRepaintTab(e, tabDocScam)
-          || mustRepaintTab(e, tabDocScamComp)) {
+        if ( mustRepaintTab(e, tabDocColl, 1)
+          || mustRepaintTab(e, tabClasseDocColl, 2)
+          || mustRepaintTab(e, tabDocComp, 3)
+          || mustRepaintTab(e, tabLabDocColl, 4)
+          || mustRepaintTab(e, tabDocScam, 5)
+          || mustRepaintTab(e, tabDocScamComp, 6)) {
            repaint();
            return;
         }
@@ -244,7 +261,7 @@ public class GestOrarioApplet extends Applet implements MouseListener, MouseMoti
             && (e.getX() < tab.getShiftX() + (tab.getB() * tab.getColonne()))
             && (e.getY() > tab.getShiftY())
             && (e.getY() < tab.getShiftY() + (tab.getH() * tab.getRighe()))) {
-               tab.selezione(e, docApplet, selCorApplet);
+               tab.selezione(e, docApplet);
                repaint();
                return true;
             }

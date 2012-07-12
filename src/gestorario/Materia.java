@@ -6,31 +6,38 @@
 package gestorario;
 
 import java.awt.*;  //grafica
-import java.util.Vector;
 
-    /**
+ /**
  *
  * @author Gio
  */
 public class Materia {
 
-    static int lastID = 0;
-    int    idMateria;
-    String nome;
-    String sigla;
-    int    hFont;
-    Color  colore;
+    static int lastID = 0;      // ultimo id utilizzato unico per tutte le aule
+    int    idMateria;           // identificatore univoco della materia
+    String nome;                // nome della materia
+    String sigla;               // abbreviazione
+    int    hFont;               // carattere per le visualizzazioni
+    Color  colore;              // colore per le visualizzazioni
 
-    Materia(int id, String n, String s, Color c) {
-        idMateria = id;
+    Materia() {
+        idMateria = lastID; lastID++;
+        nome = "";
+        sigla = "";
+        hFont = 20;
+        colore = Color.darkGray;
+    }
+
+    Materia(String n, String s, Color c) {
+        idMateria = lastID; lastID++;
         nome = n;
         sigla = s;
         hFont = 20;
         colore = c;
     }
 
-    Materia(String n, String s, Color c) {
-        idMateria = lastID;
+    Materia(int id, String n, String s, Color c) {
+        idMateria = id;
         nome = n;
         sigla = s;
         hFont = 20;

@@ -18,30 +18,31 @@ import java.util.Vector;
 public class GraphTable {
 
 //    private GraphOra tabOre[][];
-    private Frame ancestorFrame;
-    private int idTable;
-    private GraphTable succTableRig;
-    private GraphTable succTableCol;
-    private boolean  visible;
-    private Object   classeDoc;
-    private int      tipoObj;
-    private Classe   classe;
-    private Docente  docente;
-    private Aula     aula;
-            ListaOre listaOre;
-    private int b;
-    private int h;
-    private int righe;
-    private int colonne;
-    int punteggio = 0;
-    private int shiftX;
-    private int shiftY;
-    private int lastGiorno;
-    private int lastSpazio;
-    int selx;
-    int sely;
-    int curx;
-    int cury;
+    private Frame       ancestorFrame;
+    private int         idTable;
+    private GraphTable  succTableRig;
+    private GraphTable  succTableCol;
+    private boolean     visible;
+    private Object      classeDoc;
+    private int         tipoObj;
+    private Classe      classe;
+    private Docente     docente;
+    private Aula        aula;
+            ListaOre    listaOre;
+            SelCorOre   selCor;      // punta all'oggetto nella window
+    private int         b;
+    private int         h;
+    private int         righe;
+    private int         colonne;
+            int         punteggio = 0;
+    private int         shiftX;
+    private int         shiftY;
+    private int         lastGiorno;
+    private int         lastSpazio;
+            int         selx;
+            int         sely;
+            int         curx;
+            int         cury;
 
 
     int statoRicerca;
@@ -54,28 +55,30 @@ public class GraphTable {
     private int codErrorMess;
 
     public GraphTable(int id, int Righe2, int Colonne2, int b2, int h2,
-        int shiftX, int shiftY, Object window, int objWin, Frame f) {
+        int shiftX, int shiftY, Object window, int objWin, Frame f, SelCorOre sl) {
 
-        ancestorFrame = f;
-        idTable = id;
-        succTableRig = null;
-        succTableCol = null;
-        visible = false;
+        ancestorFrame   = f;
+        idTable         = id;
+        succTableRig    = null;
+        succTableCol    = null;
+        visible         = false;
         resetStatoRicerca();
-        classe = null;
-        docente = null;
-        aula = null;
-        righe = Righe2;
-        colonne = Colonne2;
-        b = b2;
-        h = h2;
-        selx = 0;
-        sely = 0;
-        curx = 0;
-        cury = 0;
-        this.shiftX = shiftX;
-        this.shiftY = shiftY;
-        errorMess = new Vector();
+        classe          = null;
+        docente         = null;
+        aula            = null;
+        selCor          = sl;   // punta all'oggetto presente in applet o window
+//        selCor.setSelected(o, 0);
+        righe           = Righe2;
+        colonne         = Colonne2;
+        b               = b2;
+        h               = h2;
+        selx            = 0;
+        sely            = 0;
+        curx            = 0;
+        cury            = 0;
+        this.shiftX     = shiftX;
+        this.shiftY     = shiftY;
+        errorMess       = new Vector();
 //        for (int i = 0; i < MAX_NUM_MESS; i++)
 //            errorMess.add("");
     }
@@ -86,6 +89,16 @@ public class GraphTable {
 //            errorMess.add("");
 
     }
+
+    public void setSelCor(SelCorOre selC) {
+        selCor = selC;
+    }
+
+    public SelCorOre getSelCor() {
+        return selCor;
+    }
+
+
     public void setSuccTableRig(GraphTable succ) {
         succTableRig = succ;
     }
@@ -165,7 +178,7 @@ public class GraphTable {
         }
     }
 
-    public void setNewStatoRicerca(SelCorOre selCor, Docente doc) {
+    public void setNewStatoRicerca(Docente doc) {
         //   corr sel1 tab1 succ1
         // 1  no   no  doc    5          - visibile senza info
         if ( (!selCor.esisteCurrent()) && (!selCor.esisteSelected()) && ( (docente != null) || (aula != null) ) ) {
@@ -192,7 +205,8 @@ public class GraphTable {
 //                        selCor.setCurrent(selCor.curGiorno, selCor.curSpazio, listaOre);
 //                        selCor.resetSelezione();
 //                        succTableRig.setStatoRicerca(6);
-                        succTableRig.setNewStatoRicerca(selCor, doc);
+                        succTableRig.setSelCor(selCor);
+                        succTableRig.setNewStatoRicerca(doc);
                     }
                 }
                 if (succTableCol != null) {
@@ -203,7 +217,8 @@ public class GraphTable {
 //                                    selCor.setCurrent(selCor.curGiorno, selCor.curSpazio, listaOre);
 //                                    selCor.resetSelezione();
 //                                  succTableCol.setStatoRicerca(2);
-                                    succTableCol.setNewStatoRicerca(selCor, doc);
+                                    succTableCol.setSelCor(selCor);
+                                    succTableCol.setNewStatoRicerca(doc);
                                 }
                                 else {
                                     succTableCol.resetStatoRicerca();
@@ -213,7 +228,8 @@ public class GraphTable {
                                     succTableCol.setList(ora.getDoc(), GestOrarioApplet.TIPODOCENTE, null);
 //                                    selCor.setCurrent(selCor.curGiorno, selCor.curSpazio, listaOre);
 //                                  succTableCol.setStatoRicerca(2);
-                                    succTableCol.setNewStatoRicerca(selCor, doc);
+                                    succTableCol.setSelCor(selCor);
+                                    succTableCol.setNewStatoRicerca(doc);
                                 }
                                 else {
                                     succTableCol.resetStatoRicerca();
@@ -234,7 +250,8 @@ public class GraphTable {
 //                    selCor.resetCurrent();
 //                    selCor.setSelezione(selCor.selGiorno, selCor.selSpazio, listaOre);
 //                  succTableRig.setStatoRicerca(7);
-                    succTableRig.setNewStatoRicerca(selCor, doc);
+                    succTableRig.setSelCor(selCor);
+                    succTableRig.setNewStatoRicerca(doc);
                 }
                 if (succTableCol != null) {
                     if (ora != null) {
@@ -243,7 +260,8 @@ public class GraphTable {
                                     succTableCol.setList(ora.getDocCom(), GestOrarioApplet.TIPODOCENTE, null);
 //                                    selCor.resetCurrent();
 //                                    selCor.setSelezione(selCor.selGiorno, selCor.selSpazio, listaOre);
-                                    succTableCol.setNewStatoRicerca(selCor, doc);
+                                    succTableCol.setSelCor(selCor);
+                                    succTableCol.setNewStatoRicerca(doc);
                                 }
                                 else {
                                     succTableCol.resetStatoRicerca();
@@ -253,7 +271,8 @@ public class GraphTable {
                                     succTableCol.setList(ora.getDoc(), GestOrarioApplet.TIPODOCENTE, null);
 //                                    selCor.resetCurrent();
 //                                    selCor.setSelezione(selCor.selGiorno, selCor.selSpazio, listaOre);
-                                    succTableCol.setNewStatoRicerca(selCor, doc);
+                                    succTableCol.setSelCor(selCor);
+                                    succTableCol.setNewStatoRicerca(doc);
                                 }
                                 else {
                                     succTableCol.resetStatoRicerca();
@@ -274,7 +293,8 @@ public class GraphTable {
 //                    selCor.setCurrent(selCor.curGiorno, selCor.curSpazio, listaOre);
 //                    selCor.setSelezione(selCor.selGiorno, selCor.selSpazio, listaOre);
 //                    succTableRig.setStatoRicerca(7);
-                      succTableRig.setNewStatoRicerca(selCor, doc);
+                    succTableRig.setSelCor(selCor);
+                    succTableRig.setNewStatoRicerca(doc);
                 }
                 if (succTableCol != null) {
                     if (ora != null) {
@@ -283,7 +303,8 @@ public class GraphTable {
                                     succTableCol.setList(ora.getDocCom(), GestOrarioApplet.TIPODOCENTE, null);
 //                                    selCor.setCurrent(selCor.curGiorno, selCor.curSpazio, listaOre);
 //                                    selCor.setSelezione(selCor.selGiorno, selCor.selSpazio, listaOre);
-                                    succTableCol.setNewStatoRicerca(selCor, doc);
+                                    succTableCol.setSelCor(selCor);
+                                    succTableCol.setNewStatoRicerca(doc);
                                 }
                                 else {
                                     succTableCol.resetStatoRicerca();
@@ -293,7 +314,8 @@ public class GraphTable {
                                     succTableCol.setList(ora.getDoc(), GestOrarioApplet.TIPODOCENTE, null);
 //                                    selCor.setCurrent(selCor.curGiorno, selCor.curSpazio, listaOre);
 //                                    selCor.setSelezione(selCor.selGiorno, selCor.selSpazio, listaOre);
-                                    succTableCol.setNewStatoRicerca(selCor, doc);
+                                    succTableCol.setSelCor(selCor);
+                                    succTableCol.setNewStatoRicerca(doc);
                                 }
                                 else {
                                     succTableCol.resetStatoRicerca();
@@ -339,7 +361,8 @@ public class GraphTable {
                     succTableCol.setList(ora.aula, GestOrarioApplet.TIPOAULA, null);
 //                    selCor.setCurrent(selCor.curGiorno, selCor.curSpazio, listaOre);
 //                    selCor.setSelezione(selCor.selGiorno, selCor.selSpazio, listaOre);
-                    succTableCol.setNewStatoRicerca(selCor, doc);
+                    succTableCol.setSelCor(selCor);
+                    succTableCol.setNewStatoRicerca(doc);
                 }
                 else {
                     succTableCol.resetStatoRicerca();
@@ -357,7 +380,8 @@ public class GraphTable {
                     succTableRig.setList(ora.getDoc(), GestOrarioApplet.TIPODOCENTE, null);
 //                    selCor.setCurrent(selCor.curGiorno, selCor.curSpazio, listaOre);
 //                    selCor.setSelezione(selCor.selGiorno, selCor.selSpazio, listaOre);
-                    succTableRig.setNewStatoRicerca(selCor, doc);
+                    succTableRig.setSelCor(selCor);
+                    succTableRig.setNewStatoRicerca(doc);
                 }
                 else {
                     succTableRig.resetStatoRicerca();
@@ -379,7 +403,8 @@ public class GraphTable {
                         succTableCol.setList(ora.aula, GestOrarioApplet.TIPOAULA, null);
 //                        selCor.setCurrent(selCor.curGiorno, selCor.curSpazio, listaOre);
 //                        selCor.setSelezione(selCor.selGiorno, selCor.selSpazio, listaOre);
-                        succTableCol.setNewStatoRicerca(selCor, doc);
+                        succTableCol.setSelCor(selCor);
+                        succTableCol.setNewStatoRicerca(doc);
                     }
                     else {
                         succTableCol.resetStatoRicerca();
@@ -423,7 +448,7 @@ public class GraphTable {
     // 6  si   no  cl     0          - visibile senza info
     // 7  no   si  cl     0          - scelto prima ora senza info
     // 8  si   si  cl     1          - scelto prima ora visualizzo info corr
-    public void paintTabella(Graphics g, SelCorOre selCor) {
+    public void paintTabella(Graphics g) {
 
         GraphOra ora = null;
         
@@ -543,33 +568,134 @@ public class GraphTable {
             g.drawString("IdTable "+idTable+"-StatoRicerca "+getStatoRicerca(), shiftX, shiftY - 2*g.getFont().getSize() - 3);
             if (classe != null) {
                 // visualizzo classe Corrente in alto dopo lo stato
-                classe.paint(g, getShiftX()+getB()*2, shiftY - 2*g.getFont().getSize() - 3, false);
+                classe.paint(g, getShiftX()+getB()*2,
+                                shiftY - 2*g.getFont().getSize() - 3, false);
             }
             if (docente != null) {
-                docente.paint(g, shiftX, shiftY - g.getFont().getSize() - 3, false);
+                docente.paint(g, shiftX,
+                                 shiftY - g.getFont().getSize() - 3, false);
             }
             if (aula != null) {
-                // visualizzo classe Corrente in alto dopo lo stato
-                aula.paint(g, getShiftX()+getB()*2, shiftY - 2*g.getFont().getSize() - 3, false);
+                aula.paint(g, getShiftX()+getB()*2,
+                              shiftY - 2*g.getFont().getSize() - 3, false);
             }
 
             int tmpSelSpazio = 0;
             if (selCor.selOra1 != null)
                 tmpSelSpazio = selCor.selOra1.spazio;
-            GraphOra o1  = selCor.selOra1;
-            GraphOra o1c = selCor.selOra2;
-            GraphOra o2  = selCor.canOra1Dest;
-            GraphOra o2c = selCor.canOra2Dest;
 
+            // disegno della tabella
             for (int i = 0; i < getRighe(); i++) {
+                // intestazione colonna pari al nome del giorno
                 g.setColor(Color.BLACK);
-                g.drawString(" "+(i+1), getShiftX() - 12, i * getH() + getShiftY() + 12);
-                g.drawString(GestOrarioApplet.giorno2Str(i + 1, true), i * getB() + getShiftX(), getShiftY() - 2);
+                g.drawString(" "+(i+1),
+                             getShiftX() - 12,
+                             i * getH() + getShiftY() + 12);
+                g.drawString(GestOrarioApplet.giorno2Str(i + 1, true), 
+                             i * getB() + getShiftX(),
+                             getShiftY() - 2);
+
+                // disegno la colonna delle ore di una giornata
                 for (int j = 0; j < getColonne(); j++) {
-                    ora = listaOre.get(i + 1, j + 1);
+                    ora = listaOre.get(i+1, j+1);
+                    // colore di default delle ore senza caratteristiche
+                    g.setColor(Color.GRAY);
+
+                    if (ora == null) {
+                        if (docente != null) {
+                            if ((docente.getBloccata(i+1, j+1) != null) ||
+                                (docente.giornoLibero == i+1))
+                            // l'ora o è bloccata o si trova nel giorno libero
+                                  g.setColor(Color.BLACK);
+                        }
+
+                        // se una delle ore selezionate è quella da disegnare
+                        if ((selCor.curOra != null) &&
+                            (i+1 == selCor.curOra.giorno) &&
+                            (j+1 == selCor.curOra.spazio)) {
+                                  g.setColor(Color.RED);
+                        }
+                        if ((selCor.selOra1 != null) &&
+                            (i+1 == selCor.selOra1.giorno) &&
+                            (j+1 == selCor.selOra1.spazio)) {
+                                  g.setColor(Color.RED);
+                        }
+                        if ((selCor.selOra2 != null) &&
+                            (i+1 == selCor.selOra2.giorno) &&
+                            (j+1 == selCor.selOra2.spazio)) {
+                                  g.setColor(Color.RED);
+                        }
+                        if ((selCor.canOra1Dest != null) &&
+                            (i+1 == selCor.canOra1Dest.giorno) &&
+                            (j+1 == selCor.canOra1Dest.spazio)) {
+                                  g.setColor(Color.RED);
+                        }
+                        if ((selCor.canOra2Dest != null) &&
+                            (i+1 == selCor.canOra2Dest.giorno) &&
+                            (j+1 == selCor.canOra2Dest.spazio)) {
+                                  g.setColor(Color.RED);
+                        }
+
+                        // disegno ora vuota
+                        g.fillRect(i * getB() + getShiftX(), 
+                                   j * getH() + getShiftY(),
+                                   getB(), getH());
+                        // disegno contorno
+                        g.setColor(Color.yellow);
+                        g.drawRect(i * getB() + getShiftX(), 
+                                   j * getH() + getShiftY(),
+                                   getB(), getH());
+                    }
+                    else {
+                        // l'ora esiste
+                        // se una delle ore selezionate è quella da disegnare
+
+                        if ((selCor.curOra != null) &&
+                            (i+1 == selCor.curOra.giorno) &&
+                            (j+1 == selCor.curOra.spazio)) {
+                                  g.setColor(Color.RED);
+                        }
+                        if ((selCor.selOra1 != null) &&
+                            (i+1 == selCor.selOra1.giorno) &&
+                            (j+1 == selCor.selOra1.spazio)) {
+                                  g.setColor(Color.RED);
+                        }
+                        if ((selCor.selOra2 != null) &&
+                            (i+1 == selCor.selOra2.giorno) &&
+                            (j+1 == selCor.selOra2.spazio)) {
+                                  g.setColor(Color.RED);
+                        }
+                        if ((selCor.canOra1Dest != null) &&
+                            (i+1 == selCor.canOra1Dest.giorno) &&
+                            (j+1 == selCor.canOra1Dest.spazio)) {
+                                  g.setColor(Color.RED);
+                        }
+                        if ((selCor.canOra2Dest != null) &&
+                            (i+1 == selCor.canOra2Dest.giorno) &&
+                            (j+1 == selCor.canOra2Dest.spazio)) {
+                                  g.setColor(Color.RED);
+                        }
+                        if (classe != null) {
+                            ora.paint(g, (ora.giorno - 1) * getB() + getShiftX()
+                                       , (ora.spazio - 1) * getH() + getShiftY()
+                                       , getB(), getH()
+                                       , 0);
+                        }
+                        else {
+                            ora.paint(g, (ora.giorno - 1) * getB() + getShiftX()
+                                       , (ora.spazio - 1) * getH() + getShiftY()
+                                       , getB(), getH()
+                                       , 1);
+                        }
+                    }
 //                    int numSpaz = Math.max(selCor.numSpazCur, selCor.numSpazSel);
-                    if ( (o2 != null) && (o2.getPrec() != null)
-                          && (o1 != null) && (o1.getPrec() == null) && (o1.getSucc() == null)  ) {
+
+                    /*********************
+                    if ( (selCor.canOra1Dest != null) &&
+                         (selCor.canOra1Dest.getPrec() != null)  &&
+                         (selCor.selOra1 != null) &&
+                         (selCor.selOra1.getPrec() == null) &&
+                         (selCor.selOra1.getSucc() == null)  ) {
                         tmpSelSpazio --;
                     }
 
@@ -598,18 +724,6 @@ public class GraphTable {
                          && (selCor.selOra2.spazio == ora.spazio)){
                             ora.setSelezionata();
                         }
-/**************************
-                        if ((selCor.canOra1Dest != null)
-                         && (selCor.canOra1Dest.giorno == ora.giorno)
-                         && (selCor.canOra1Dest.spazio == ora.spazio)){
-                            ora.setCandidata();
-                        }
-                        if ((selCor.canOra2Dest != null)
-                         && (selCor.canOra2Dest.giorno == ora.giorno)
-                         && (selCor.canOra2Dest.spazio == ora.spazio)){
-                            ora.setCandidata();
-                        }
-************************/
                         if ( (idTable == 3) && (selCor.esisteSelected()) ) {
                             resetErrorMess();
                             int errorM = scambioCorretto(selCor.selOra1.giorno, tmpSelSpazio, i+1, j+1, 0, selCor, false);
@@ -623,25 +737,6 @@ public class GraphTable {
                             else
                                 ora.setScambio(GraphOra.NONCALCOLATO);
                         }
-
-
-/*****
-                        if (i+1 == selCor.curGiorno) {
-                            int dir = 1;
-                            GraphOra o = selCor.curOra;
-                            if ( (o != null) && (o.getPrec() != null) 
-                               && !((selCor.curGiorno == selCor.selGiorno) && (selCor.curSpazio == selCor.selSpazio + 1)) )
-                                // se sono posizionato sulla seconda ora di una catena
-                                // che non sia quella selezionata
-                                dir = -1;
-                            // controllo se l'ora corrente è tra quelle correnti
-                            for (int s = 0; s < numSpaz; s++) {
-                                if (j+1==selCor.curSpazio+(s*dir)) {
-                                    ora.setSelezionata(1);
-                                }
-                            }
-                    }
-****/
                         if (classe != null) {
                             ora.paint(g, (ora.giorno - 1) * getB() + getShiftX()
                                        , (ora.spazio - 1) * getH() + getShiftY()
@@ -667,22 +762,6 @@ public class GraphTable {
                             g.setColor(Color.WHITE);
                         }
 
-/****
-                        if ((selCor.canOra1Dest != null) && (i+1 == selCor.canOra1Dest.giorno)) {
-                            // controllo se l'ora corrente è tra quelle candidate
-                            if (j+1 == selCor.canOra1Dest.spazio) {
-                                    g.setColor(new Color(205, 100, 0, 125));
-                                }
-                            if (j+1 == selCor.canSpazio2) {
-                                    g.setColor(new Color(205, 100, 0, 125));
-                                }
-                            for (int s = 0; s < selCor.numSpazCan; s++) {
-                                if (j+1==selCor.canSpazio+s) {
-                                    g.setColor(new Color(205, 100, 0, 125));
-                                }
-                            }
-                        }
-***/
                         if ((selCor.curOra != null)
                                 && (i+1 == selCor.curOra.giorno)
                                 && (j+1 == selCor.curOra.spazio)) {
@@ -739,6 +818,7 @@ public class GraphTable {
                         }
                         //                    tabOre[i][j] = new GraphOra(i + 1, j + 1, null, null, null, null, Color.WHITE);
                     }
+                    *************/
                 }
             }
             if ((classe != null) && selCor.esisteSelected() && (idTable == 3)) {
@@ -772,21 +852,27 @@ public class GraphTable {
     }
 
     // ritorna vero se bisogna ridisegnare la tabella dato che l'ora
-    // corrent è cambiata
-    public boolean cambiaOraCorrente(MouseEvent e, SelCorOre selCor, Docente doc) {
+    // corrente è cambiata
+    public boolean cambiaOraCorrente(int newCurGiorno, int newCurSpazio,
+            int cx, int cy, Docente doc) {
 
-        GraphOra ora;
+        GraphOra ora = null;
         boolean ridipingi = false;
 
-        // se il mouse è fuori dall'area della tabella si deve solo deselezionare l'ora corrente
-        if ( ((e.getX() - getShiftX()) < 0)
-          || ((e.getY() - getShiftY()) < 0)
-          || ((e.getX() - getShiftX()) > (colonne) * b)
-          || ((e.getY() - getShiftY()) > (righe) * h) ) {
+        curx = cx;
+        cury = cy;
+
+        if ((newCurGiorno == -1) || (newCurSpazio == -1)) {
+            // se il mouse è fuori dall'area della tabella
+            // si deve solo deselezionare l'ora corrente
             ora = selCor.curOra;
             if ( (ora != null) ||
-                ( ((selCor.curOra != null) && (selCor.curOra.giorno >= 1) && (selCor.curOra.giorno <= GestOrarioApplet.maxNumGiorni))
-                && ((selCor.curOra != null) && (selCor.curOra.spazio >= 1) && (selCor.curOra.spazio <= GestOrarioApplet.maxNumSpazi)) ) ) {
+                ( ((selCor.curOra != null) &&
+                   (selCor.curOra.giorno >= 1) &&
+                   (selCor.curOra.giorno <= GestOrarioApplet.maxNumGiorni)) &&
+                  ((selCor.curOra != null) &&
+                   (selCor.curOra.spazio >= 1) &&
+                   (selCor.curOra.spazio <= GestOrarioApplet.maxNumSpazi)) ) ) {
 //                deselezionaOra(ora);
                 ridipingi = true;
             }
@@ -795,20 +881,15 @@ public class GraphTable {
             setLastGiorno(0);
             setLastSpazio(0);
         }
-        else if( selCor.esisteSelected() && 
-                ((getStatoRicerca() == 3) || (getStatoRicerca() == 4)) ) {
+//        else if( selCor.esisteSelected() &&
+//                ((getStatoRicerca() == 3) ||
+//                 (getStatoRicerca() == 4)) ) {
             // se nella tabella c'è un'ora selezionata
             // e sono nello stato 3 o 4 l'ora corrente non serve
 //            ridipingi = true;
 //            selCor.resetCurrent(getStatoRicerca());
-        }
+//        }
         else {
-            curx = (e.getX() - getShiftX()) - (e.getX() - getShiftX()) % getB();
-            cury = (e.getY() - getShiftY()) - (e.getY() - getShiftY()) % getH();
-
-            int newCurGiorno = (curx / getB()) + 1;
-            int newCurSpazio = (cury / getH()) + 1;
-
             // se non è l'ora corrente
             if (selCor.curOra != null) {
                 if ((selCor.curOra.giorno != newCurGiorno)
@@ -832,7 +913,9 @@ public class GraphTable {
             else {
                 // l'ora corrente non è ancora stata impostata o
                 // è un'ora libera/vuota
-                ora = listaOre.get(newCurGiorno, newCurSpazio);
+
+                if (listaOre != null)
+                    ora = listaOre.get(newCurGiorno, newCurSpazio);
                 if (ora == null)
                     selCor.resetCurrent(getStatoRicerca());
                 else
@@ -846,7 +929,7 @@ public class GraphTable {
             setLastSpazio(newCurSpazio);
         }
 
-        setNewStatoRicerca(selCor, doc);
+        setNewStatoRicerca(doc);
 
         return (ridipingi);
     }
@@ -1383,9 +1466,12 @@ public class GraphTable {
         return totMess;
     }
 
-    public void selezione(MouseEvent e, Docente doc, SelCorOre selCor) {
+    public void selezione(MouseEvent e, Docente doc) {
 
         GraphOra ora;
+        int curGiorno, selGiorno;
+        int curSpazio, selSpazio;
+
         int radius = 8;
         if (e.getButton() == MouseEvent.BUTTON1) {
             selx = (e.getX() - getShiftX()) - (e.getX() - getShiftX()) % getB();
@@ -1398,8 +1484,9 @@ public class GraphTable {
                 if (codErrorMess != 0)
                     JOptionPane.showMessageDialog(null, totNumToMessErr(codErrorMess));
             }
-
-            ora = listaOre.get((selx / getB()) + 1, (sely / getH()) + 1);
+            selGiorno = (selx / getB()) + 1;
+            selSpazio = (sely / getH()) + 1;
+            ora = listaOre.get(selGiorno, selSpazio);
             // se è un'ora buca o
             // se non è collegata al precedente (solo la prima ora può essere selezionata)
 
@@ -1409,8 +1496,8 @@ public class GraphTable {
                     // se è il secondo click sulla stessa cella vuol dire che
                     // la si vuole deselezionare
                     if ( (selCor.selOra1 != null)
-                      && (selCor.selOra1.giorno == (selx / getB()) + 1)
-                      && (selCor.selOra1.spazio == (sely / getH()) + 1)
+                      && (selCor.selOra1.giorno == selGiorno)
+                      && (selCor.selOra1.spazio == selSpazio)
                       && getHasBeenClicked() ) {
 //                        deselezionaOra(ora);
                         selCor.resetSelected1();
@@ -1427,7 +1514,7 @@ public class GraphTable {
                         if (ora != null) {
 //                            deselezionaOra(ora);
                         }
-                        ora  = listaOre.get((selx / getB()) + 1, (sely / getH()) + 1);
+                        ora  = listaOre.get(selGiorno, selSpazio);
                         selCor.setSelected(ora, getStatoRicerca());
                         setHasBeenClicked(true);
                     }
@@ -1445,8 +1532,8 @@ public class GraphTable {
 //            int s2 = (getLastSpazio() - getShiftY()) - (getLastSpazio() - getShiftY()) % getH();
             curx = (e.getX() - getShiftX()) - (e.getX() - getShiftX()) % getB();
             cury = (e.getY() - getShiftY()) - (e.getY() - getShiftY()) % getH();
-            int g = (curx/getB())+1;
-            int s = (cury/getH())+1;
+            curGiorno = (curx/getB())+1;
+            curSpazio = (cury/getH())+1;
 /*********************
             ora = listaOre.get(g, s);
 
@@ -1459,9 +1546,11 @@ public class GraphTable {
             }
 *********/
             resetErrorMess();
-            codErrorMess = scambioCorretto(selCor.selOra1.giorno, selCor.selOra1.spazio, g, s, 0, selCor, true);
+            codErrorMess = scambioCorretto(selCor.selOra1.giorno, selCor.selOra1.spazio,
+                                           curGiorno, curSpazio, 0, selCor, true);
             if (codErrorMess == 0) {
-                scambia(selCor.selOra1.giorno, selCor.selOra1.spazio, g, s);
+                scambia(selCor.selOra1.giorno, selCor.selOra1.spazio, 
+                        curGiorno, curSpazio);
                 selCor.resetAll();
 
                 //          g.setColor(Color.black);
@@ -1470,7 +1559,7 @@ public class GraphTable {
 
             }
             else {
-                GraphOra o = listaOre.get((curx / getB()) + 1, (cury / getH()) + 1);
+                GraphOra o = listaOre.get(curGiorno, curSpazio);
                 if (o != null) {
                     JOptionPane.showMessageDialog(null, totNumToMessErr(codErrorMess));
                     if (isSimpleError(codErrorMess)) {
@@ -1504,7 +1593,7 @@ public class GraphTable {
         {
         }
 
-        setNewStatoRicerca(selCor, doc);
+        setNewStatoRicerca(doc);
         // either way, store the new x and y values
         setLastGiorno(e.getX());
         setLastSpazio(e.getY());

@@ -13,8 +13,8 @@ import java.awt.*;  //grafica
  */
 public class GraphOra extends Ora {
 
-    private   GraphOra     succ; // se != null non deve separarsi dalla successiva
-    private   GraphOra     prec; // se != null non deve separarsi dalla precedente
+    protected GraphOra     succ; // se != null non deve separarsi dalla successiva
+    protected GraphOra     prec; // se != null non deve separarsi dalla precedente
     private int     x;
     private int     y;
     private int     alt;
@@ -23,8 +23,8 @@ public class GraphOra extends Ora {
             Color   colore;
 
     GraphOra() {
-        succ    = null;
-        prec    = null;
+        succ        = null;
+        prec        = null;
         x       = 0;
         y       = 0;
         alt     = 0;
@@ -34,16 +34,22 @@ public class GraphOra extends Ora {
     }
 
     GraphOra(int g, int sp, boolean blocc) {
-        succ    = null;
-        prec    = null;
+        succ        = null;
+        prec        = null;
         giorno  = g;
         spazio  = sp;
         bloccata = blocc;
+        x       = 0;
+        y       = 0;
+        alt     = 0;
+        largh   = 0;
+        hFont   = 20;
+        colore  = Color.GRAY;
     }
 
     GraphOra(int g, int sp, Classe cl, Materia m, Aula a, Color c) {
-        succ    = null;
-        prec    = null;
+        succ        = null;
+        prec        = null;
         giorno  = g;
         spazio  = sp;
         classe  = cl;
@@ -173,21 +179,21 @@ public class GraphOra extends Ora {
             g.drawRect(x+3, y+3, alt-6, largh-6);
 //            g.setColor(new Color(colore.getRed(), colore.getGreen(), colore.getBlue(), 125));
 //            g.setColor(new Color(255, 150, 0, 125));
-            g.setColor(Color.ORANGE);
+            g.setColor(Color.RED);
             g.fill3DRect(x+4, y+4, alt-7, largh-7, true);
         }
         if (candidata) {
             g.drawRect(x+3, y+3, alt-6, largh-6);
 //            g.setColor(new Color(colore.getRed(), colore.getGreen(), colore.getBlue(), 125));
 //            g.setColor(new Color(255, 0, 150, 125));
-            g.setColor(Color.YELLOW);
-            g.fill3DRect(x+4, y+4, alt-7, largh-7, false);
+            g.setColor(Color.RED);
+            g.fill3DRect(x+4, y+4, alt-7, largh-7, true);
         }
         if (corrente) {
 //            g.drawRect(x+3, y+3, alt-6, largh-6);
 //            g.setColor(new Color(colore.getRed(), colore.getGreen(), colore.getBlue(), 125));
 //            g.setColor(new Color(255, 150, 0, 125));
-            g.setColor(Color.GREEN);
+            g.setColor(Color.PINK);
             g.drawRect(x+1, y+1, alt-2, largh-2);
             g.drawRect(x+2, y+2, alt-4, largh-4);
             g.drawRect(x+3, y+3, alt-6, largh-6);
