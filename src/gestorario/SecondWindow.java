@@ -42,7 +42,7 @@ public class SecondWindow extends JPanel implements MouseListener, MouseMotionLi
         add(calcSumBtn);
     }
 
-    public void intiTSecondWindow(GraphOra o) {
+    public void intiTSecondWindow(OraGraph o) {
 
             this.setSize(600, 800);
 
@@ -72,7 +72,6 @@ public class SecondWindow extends JPanel implements MouseListener, MouseMotionLi
             tabDocColl.setList(docWindow, GestOrarioApplet.TIPODOCENTE, GestOrarioApplet.infoMatDocAule);
             tabDocColl.setVisible(true);
             selCorWin = new SelCorOre();
-            selCorWin.setSelected(o, 0);
             tabDocColl.setNewStatoRicerca(docWindow);
 
             tabDocColl.setSuccTableRig(tabClasseDocColl);

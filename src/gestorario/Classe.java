@@ -79,15 +79,15 @@ public class Classe {
         colore = c;
     }
 
-    public void addOra(GraphOra o) {
+    public void addOra(OraGraph o) {
         /****
-        GraphOra oo = listaOre.get(o.giorno, o.spazio);
+        OraGraph oo = listaOre.get(o.giorno, o.spazio);
         if (oo != null)
             listaOre.remove(oo);
         oo = null;
          */
         if (!listaOre.add(o)) {
-            GraphOra oo = listaOre.get(o.giorno, o.spazio);
+            OraGraph oo = listaOre.get(o.giorno, o.spazio);
             String str = "Nella classe "+nome+", nel giorno "+o.giorno+" l'ora "+o.spazio;
             str += " non può essere assegnata a "+o.classe.nome+" perchè c'è già ";
             if (oo.getDoc() != null) {

@@ -140,7 +140,7 @@ public class LoadCSV {
         Color c, cLab;
         Materia m, mLab;
         Docente d, dLab;
-        GraphOra o, oColl;
+        OraGraph o, oColl;
         int numRig = 100;
         int numCol = 37;
         ArrayList<String> riga1 = null, riga2 = null;
@@ -167,7 +167,7 @@ public class LoadCSV {
                     System.out.println("Creato docente teorico "+d.nome);
                 }
                 for (int gg = 1; gg <= 6; gg++) {
-                    GraphOra precLab = null;
+                    OraGraph precLab = null;
                     for (int oo = 1; oo <= 6; oo++) {
                         Aula a;
                         String sTeo = riga1.get(1 + oo - 1 + (gg - 1) * 6);
@@ -209,7 +209,7 @@ public class LoadCSV {
                             o = cl.listaOre.get(gg, oo);
                             if (o == null) {
                                 // ora non ancora incontrata
-                                o = new GraphOra(gg, oo, cl, m, a, c);
+                                o = new OraGraph(gg, oo, cl, m, a, c);
                                 if (d.tipo == Docente.TEORICO)
                                     o.setDoc(d);
                                 else
@@ -293,7 +293,7 @@ public class LoadCSV {
                             o = cl.listaOre.get(gg, oo);
                             if (o == null) {
                                 // ora non ancora incontrata
-                                o = new GraphOra(gg, oo, cl, m, a, c);
+                                o = new OraGraph(gg, oo, cl, m, a, c);
                                 if (d.tipo == Docente.TEORICO)
                                     o.setDoc(d);
                                 else

@@ -11,10 +11,10 @@ import java.awt.*;  //grafica
  *
  * @author Gio
  */
-public class GraphOra extends Ora {
+public class OraGraph extends Ora {
 
-    protected GraphOra     succ; // se != null non deve separarsi dalla successiva
-    protected GraphOra     prec; // se != null non deve separarsi dalla precedente
+    protected OraGraph     succ; // se != null non deve separarsi dalla successiva
+    protected OraGraph     prec; // se != null non deve separarsi dalla precedente
     private int     x;
     private int     y;
     private int     alt;
@@ -22,7 +22,7 @@ public class GraphOra extends Ora {
     private int     hFont;
             Color   colore;
 
-    GraphOra() {
+    OraGraph() {
         succ        = null;
         prec        = null;
         x       = 0;
@@ -33,7 +33,7 @@ public class GraphOra extends Ora {
         colore  = Color.GRAY;
     }
 
-    GraphOra(int g, int sp, boolean blocc) {
+    OraGraph(int g, int sp, boolean blocc) {
         succ        = null;
         prec        = null;
         giorno  = g;
@@ -47,7 +47,7 @@ public class GraphOra extends Ora {
         colore  = Color.GRAY;
     }
 
-    GraphOra(int g, int sp, Classe cl, Materia m, Aula a, Color c) {
+    OraGraph(int g, int sp, Classe cl, Materia m, Aula a, Color c) {
         succ        = null;
         prec        = null;
         giorno  = g;
@@ -94,19 +94,19 @@ public class GraphOra extends Ora {
     }
 
 
-    public void setSucc(GraphOra o) {
+    public void setSucc(OraGraph o) {
         succ = o;
     }
 
-    public void setPrec(GraphOra o) {
+    public void setPrec(OraGraph o) {
         prec = o;
     }
 
-    public GraphOra getSucc() {
+    public OraGraph getSucc() {
         return succ;
     }
 
-    public GraphOra getPrec() {
+    public OraGraph getPrec() {
         return prec;
     }
 
@@ -146,7 +146,8 @@ public class GraphOra extends Ora {
     }
     // info = 0 vuota
     // info = 1 solo classe
-    public void paint (Graphics g, int x, int y, int alt, int largh, int info) {
+    public void paint (Graphics g, int x, int y, int alt, int largh,
+           boolean corrente, boolean selezionata, boolean candidata, int info) {
 
         if (docente != null)
             g.setColor(docente.colore);

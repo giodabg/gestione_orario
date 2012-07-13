@@ -56,7 +56,7 @@ public class Aula {
         /* creo ogni ora teoricamente possibile
         for (int g = 1; g <= GestOrarioApplet.maxNumGiorni; g++) {
             for (int s = 1; s <= GestOrarioApplet.maxNumSpazi; s++) {
-                listaOre.addOra(new GraphOra(g, s, null, GestOrarioApplet.d0,
+                listaOre.addOra(new OraGraph(g, s, null, GestOrarioApplet.d0,
                     GestOrarioApplet.m0, GestOrarioApplet.a0, GestOrarioApplet.c0));
             }
         }
@@ -90,14 +90,14 @@ public class Aula {
         return trovato;
     }
 
-    public void addOra(GraphOra o) {
+    public void addOra(OraGraph o) {
         /*****
         if (oo != null)
             listaOre.remove(oo);
         oo = null;
          */
          if ( (!listaOre.add(o)) && !(nome.equalsIgnoreCase("O")) ) {
-            GraphOra oo = listaOre.get(o.giorno, o.spazio);
+            OraGraph oo = listaOre.get(o.giorno, o.spazio);
             String str = "Nell'aula "+nome+", nel giorno "+o.giorno+" l'ora "+o.spazio;
             str += " non può essere assegnata a "+o.classe.nome+" perchè c'è già la "+oo.classe.nome;
             System.out.println(str);

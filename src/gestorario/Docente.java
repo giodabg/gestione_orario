@@ -39,7 +39,7 @@ public class Docente {
         /*
         for (int g=1; g <= GestOrarioApplet.maxNumGiorni; g++)
         for (int s=1; s <= GestOrarioApplet.maxNumSpazi; s++)
-        listaOre.addOra(new GraphOra(g, s, null, GestOrarioApplet.d0,
+        listaOre.addOra(new OraGraph(g, s, null, GestOrarioApplet.d0,
         GestOrarioApplet.m0, GestOrarioApplet.a0, GestOrarioApplet.c0));
         */
         giornoLibero = -1;
@@ -58,7 +58,7 @@ public class Docente {
         /*
         for (int g=1; g <= GestOrarioApplet.maxNumGiorni; g++)
         for (int s=1; s <= GestOrarioApplet.maxNumSpazi; s++)
-        listaOre.addOra(new GraphOra(g, s, null, GestOrarioApplet.d0,
+        listaOre.addOra(new OraGraph(g, s, null, GestOrarioApplet.d0,
         GestOrarioApplet.m0, GestOrarioApplet.a0, GestOrarioApplet.c0));
         */
         giornoLibero = gl;
@@ -67,7 +67,7 @@ public class Docente {
     }
 
     public void addOraBloccata(int g, int sp) {
-        GraphOra o = new GraphOra(g, sp, true);
+        OraGraph o = new OraGraph(g, sp, true);
         if (!listaOreBloccate.add(o)) {
             String str = "Per "+nome+" nella classe "+o.classe.nome+", nel giorno "+g+" l'ora "+sp+" è già bloccata.";
             System.out.println(str);
@@ -76,7 +76,7 @@ public class Docente {
         }
     }
 
-    public GraphOra getBloccata(int g, int sp) {
+    public OraGraph getBloccata(int g, int sp) {
         return listaOreBloccate.get(g, sp);
     }
 
@@ -106,7 +106,7 @@ public class Docente {
         }         
     }
 
-    public void addOra(GraphOra o) {
+    public void addOra(OraGraph o) {
         if (!listaOre.add(o)) {
             String str = "Per "+nome+" nella classe "+o.classe.nome+", nel giorno "+o.giorno+" l'ora "+o.spazio+" è già assegnata.";
             System.out.println(str);
@@ -139,7 +139,7 @@ public class Docente {
        String line1 = "";
        String line2 = "";
        boolean aggiungiLine2 = false;
-       GraphOra o;
+       OraGraph o;
        line1 += nome;
        line2 += "           ";
        for (int g=1; g <= 6; g++) {

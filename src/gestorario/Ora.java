@@ -20,9 +20,6 @@ public class Ora {
     protected Aula    aula;
     protected Ora     succ; // se != null non deve separarsi dalla successiva
     protected Ora     prec; // se != null non deve separarsi dalla precedente
-    protected boolean candidata;
-    protected boolean corrente;
-    protected boolean selezionata;
     protected int     adattaScambio; // -2: no scambio -1: si scambio
     static  public int     NONCALCOLATO = 0;
     static  public int     NOSCAMBIO    = -1;
@@ -41,9 +38,9 @@ public class Ora {
         aula        = null;
         succ        = null;
         prec        = null;
-        candidata   = false;
+        /*candidata   = false;
         corrente    = false;
-        selezionata = false;
+        selezionata = false;*/
         adattaScambio = NONCALCOLATO;
         docenteConProblemi = null;
     }
@@ -59,9 +56,9 @@ public class Ora {
         aula    = null;
         succ    = null;
         prec    = null;
-        candidata = false;
+        /*candidata = false;
         corrente = false;
-        selezionata = false;
+        selezionata = false;*/
         adattaScambio = NONCALCOLATO;
         docenteConProblemi = null;
     }
@@ -80,48 +77,48 @@ public class Ora {
 //        aula.addOra(this);
         succ    = null;
         prec    = null;
-        candidata = false;
+        /*candidata = false;
         corrente = false;
-        selezionata = false;
+        selezionata = false;*/
         adattaScambio = NONCALCOLATO;
         docenteConProblemi = null;
     }
 
-    public void setCandidata() {
-        candidata = true;
+    /*public void setCandidata() {
+    candidata = true;
     }
     public void resetCandidata() {
-        candidata = false;
+    candidata = false;
     }
     public boolean isCandidata() {
-        return candidata;
+    return candidata;
     }
 
     public void setCorrente() {
-        corrente = true;
+    corrente = true;
     }
     public void resetCorrente() {
-        corrente = false;
+    corrente = false;
     }
     public boolean isCorrente() {
-        return corrente;
+    return corrente;
     }
 
     public void setSelezionata() {
-        selezionata = true;
+    selezionata = true;
     }
     public void resetSelezionata() {
-        selezionata = false;
+    selezionata = false;
     }
     public boolean isSelezionata() {
-        return selezionata;
+    return selezionata;
     }
 
     public void resetAll() {
-        candidata = false;
-        corrente = false;
-        selezionata = false;
-    }
+    candidata = false;
+    corrente = false;
+    selezionata = false;
+    }*/
 
     public void setScambio(int val) {
         adattaScambio = val;
