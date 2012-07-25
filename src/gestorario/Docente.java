@@ -17,14 +17,19 @@ public class Docente {
     public final static int TEORICO = 0;
     public final static int ITP     = 1;
 
-    static int lastID = 0;
+    static int  lastID = 0;
     int         idDocente;
     String      nome;
-    int         tipo;  // 0=teorico, 1=ITP
-    Vector      materie;
-    ListaOre    listaOre;
-    ListaOre    listaOreBloccate;
+    int         tipo;       // 0=teorico, 1=ITP
+    Vector      materie;    // materie insegnate
+    Vector      oreLibere;  // ore libere comprensive delle ore a disposizione
+                            // ma non comprensive di eventuali ore libere bloccate
+                            // e delle ore del giorno libero
+    ListaOre    listaOre;   // ore di lezione comprensive di eventuali ore di lezione bloccate
+    ListaOre    listaOreBloccate;   // ore di lezione o libere bloccate escluse quelle del
+                                    // giorno libero
     int         giornoLibero;
+
     int         hFont;
     Color       colore;
 
@@ -34,6 +39,7 @@ public class Docente {
         tipo      = t;
         materie   = new Vector();
         materie.add(m);
+        oreLibere = new Vector();
         listaOre  = new ListaOre();
         listaOreBloccate = new ListaOre();
         /*
@@ -53,26 +59,22 @@ public class Docente {
         tipo = t;
         materie = new Vector();
         materie.add(m);
+        oreLibere = new Vector();
         listaOre = new ListaOre();
         listaOreBloccate = new ListaOre();
-        /*
-        for (int g=1; g <= GestOrarioApplet.maxNumGiorni; g++)
-        for (int s=1; s <= GestOrarioApplet.maxNumSpazi; s++)
-        listaOre.addOra(new OraGraph(g, s, null, GestOrarioApplet.d0,
-        GestOrarioApplet.m0, GestOrarioApplet.a0, GestOrarioApplet.c0));
-        */
+
         giornoLibero = gl;
+
         hFont = 20;
         colore = c;
     }
 
     public void addOraBloccata(int g, int sp) {
-        OraGraph o = new OraGraph(g, sp, true);
+        OraGraph o = new OraGraph(g, sp, true, false);
         if (!listaOreBloccate.add(o)) {
             String str = "Per "+nome+" nella classe "+o.classe.nome+", nel giorno "+g+" l'ora "+sp+" è già bloccata.";
             System.out.println(str);
             JOptionPane.showMessageDialog(null, str);
-
         }
     }
 
@@ -82,6 +84,13 @@ public class Docente {
 
     public void setGiornoLibero(int gl) {
         giornoLibero = gl;
+        for (int s=1; s <= GestOrarioApplet.maxNumSpazi; s++) {
+            OraLibera ol;
+            ol = (OraLibera) GestOrarioApplet.infoMatDocAule.infoOreLibere.get(
+                    (gl-1)*GestOrarioApplet.maxNumSpazi+(s-1));
+            ol.removeDocente(this);
+            oreLibere.remove(ol);
+        }
     }
 
     public int getGiornoLibero() {
@@ -106,11 +115,33 @@ public class Docente {
         }         
     }
 
-    public void addOra(OraGraph o) {
-        if (!listaOre.add(o)) {
-            String str = "Per "+nome+" nella classe "+o.classe.nome+", nel giorno "+o.giorno+" l'ora "+o.spazio+" è già assegnata.";
+    public void addOraLibera(int g, int s) {
+        OraLibera ol;
+        ol = (OraLibera) GestOrarioApplet.infoMatDocAule.infoOreLibere.get(
+                (g-1)*GestOrarioApplet.maxNumSpazi+(s-1));
+        if (ol != null) {
+            ol.addDocente(this);
+            oreLibere.add(ol);
+        }
+        else {
+            String str = nome+" non può avere nel giorno "+g+" l'ora "+s+" come libera.";
             System.out.println(str);
-            JOptionPane.showMessageDialog(null, str);            
+            JOptionPane.showMessageDialog(null, str);
+        }
+    }
+
+    public void addOraDisposizione(int g, int s) {
+        OraLibera ol;
+        ol = (OraLibera) GestOrarioApplet.infoMatDocAule.infoOreLibere.get(
+                (g-1)*GestOrarioApplet.maxNumSpazi+(s-1));
+        if (ol != null) {
+            ol.addDocente(this);
+            oreLibere.add(ol);
+        }
+        else {
+            String str = nome+" non può avere nel giorno "+g+" l'ora "+s+" come a disposizione.";
+            System.out.println(str);
+            JOptionPane.showMessageDialog(null, str);
         }
     }
 

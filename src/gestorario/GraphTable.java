@@ -570,7 +570,7 @@ public class GraphTable {
             g.drawString("IdTable "+idTable+"-StatoRicerca "+getStatoRicerca(), shiftX, shiftY - 2*g.getFont().getSize() - 3);
             if (classe != null) {
                 // visualizzo classe Corrente in alto dopo lo stato
-                classe.paint(g, getShiftX()+getB()*2,
+                classe.paint(g, getShiftX()+getB()*3,
                                 shiftY - 2*g.getFont().getSize() - 3, false);
             }
             if (docente != null) {
@@ -647,6 +647,16 @@ public class GraphTable {
                         g.drawRect(i * getB() + getShiftX(), 
                                    j * getH() + getShiftY(),
                                    getB(), getH());
+
+                        int errorM = 0;
+                        if ( (idTable == 3) && (selCor.esisteSelected()) ) {
+                            resetErrorMess();
+                            errorM = scambioCorretto(selCor.selOra1.giorno, tmpSelSpazio, i+1, j+1, 0, selCor, false);
+                            if ((errorM <= 0))
+                                    OraGraph.paintScambio(g, i * getB() + getShiftX(),
+                                       j * getH() + getShiftY(),
+                                       getB(), getH(), OraGraph.SISCAMBIO);
+                        }
                     }
                     else {
                         // l'ora esiste
@@ -681,6 +691,15 @@ public class GraphTable {
                             (j+1 == selCor.canOra2Dest.spazio)) {
                                   candidata = true;
                         }
+
+                        int errorM = 0;
+                        if ( (idTable == 3) && (selCor.esisteSelected()) ) {
+                            resetErrorMess();
+                            errorM = scambioCorretto(selCor.selOra1.giorno, tmpSelSpazio, i+1, j+1, 0, selCor, false);
+                            if ((errorM <= 0))
+                                ora.setScambio(OraGraph.SISCAMBIO);
+                        }
+    
                         if (classe != null) {
                             ora.paint(g, (ora.giorno - 1) * getB() + getShiftX()
                                        , (ora.spazio - 1) * getH() + getShiftY()
@@ -828,7 +847,7 @@ public class GraphTable {
                 }
             }
             if ((classe != null) && selCor.esisteSelected() && (idTable == 3)) {
-                if (codErrorMess != 0) {
+                if (codErrorMess > 0) {
                     g.setColor(Color.RED);
                     g.drawString("*** SCAMBIO IMPOSSIBILE ***", shiftX, shiftY - g.getFont().getSize() - 3);
                 }
@@ -909,7 +928,7 @@ public class GraphTable {
                     OraInt oraI = new OraInt();
                     oraI.giorno = newCurGiorno;
                     oraI.spazio = newCurSpazio;
-                    selCor.setCurrent(oraI, getStatoRicerca());
+                    selCor.setCurrent(oraI, getStatoRicerca(), listaOre);
                     if ((getLastGiorno() != newCurGiorno)
                             || (getLastSpazio() != newCurSpazio)) {
                         ridipingi = true;
@@ -923,7 +942,7 @@ public class GraphTable {
                 OraInt oraI = new OraInt();
                 oraI.giorno = newCurGiorno;
                 oraI.spazio = newCurSpazio;
-                selCor.setCurrent(oraI, getStatoRicerca());
+                selCor.setCurrent(oraI, getStatoRicerca(), listaOre);
                 if ((getLastGiorno() != newCurGiorno)
                         || (getLastSpazio() != newCurSpazio)) {
                     ridipingi = true;
@@ -1090,7 +1109,6 @@ public class GraphTable {
         // si trova la prima
         if ( (o1 != null) && (o1.getPrec() != null) ) {
             s1--;
-//            if (selez) selCor.setSelezioneSpazioLab(s1);
         }
 
         // quando l'ora corrente è quella che segue quella selezionata
@@ -1125,21 +1143,238 @@ public class GraphTable {
         else {
             // se siamo qui i casi particolari sono esclusi e si considerano solo
             // i casi normali:
+
             // se l'ora corrente è in una catena ma non è la prima si trova la prima
             if ( (o2 != null) && (o2.getPrec() != null) ) {
-                s1--;
-//                if (selez) selCor.setSelezioneSpazioLab(s1);
+                s2--;
             }
-            // ora le due sono:
-            // entrambe ore semplici
-            // entrambe ore iniziali di catene
-            // solo una delle due inizi di catene
+
+            // ora le due ore sono:
+            // caso 1 - entrambe ore semplici
+            // caso 2 - entrambe ore iniziali di catene
+            // caso 3 - solo una delle due sta all'inizio della catena
             // quindi si confrontano le due ore e poi se una o entrambe sono catene la seconda
             return scambioCorrettoRic(g1, s1, g2, s2, false, totMess, selCor, selez);
         }
     }
 
-    public int scambioCorrettoRic(int g1, int s1, int g2, int s2, boolean casoParticolare, int totMess, SelCorOre selCor, boolean selez) {
+    // si controlla che da oDest (g,s) si possa spostare in oSorg
+    // ritorna modifica di totMess se non si può fare lo scambio perchè un'ora è occupata
+    // ritorna totMess se si può fare lo scambio perchè le ore di arrivo sono libere
+    // assunzione: il docente di oSorg ha l'ora libera in (g,s)
+    private int oraDestDestOccupata (OraGraph oSorg, int g, int s, int tipo, int totMess) {
+        if (oSorg != null) {
+            // trovo chi occupa l'ora della classe in (g,s)
+            OraGraph oDest = oSorg.classe.listaOre.get(g, s);
+            if (oDest == null) {
+                // oDest è libera, quindi nessuna necessità
+                // di fare ulteriori analisi
+                return totMess;                
+            }
+            else {
+                Docente dDest = null;
+                if (tipo == Docente.TEORICO)
+                    dDest = (Docente) oDest.getDoc();
+                else if (tipo == Docente.ITP)
+                    dDest = (Docente) oDest.getDocCom();
+                if (dDest == null) {
+                    // non esiste un docente dDest, quindi nessuna necessità
+                    // di fare ulteriori analisi
+                    return totMess;
+                }
+
+                // l'ora è occupata da un docente
+                // controllo che l'ora oSorg sia utilizzabile da dDest
+                OraGraph oDest_dDest = dDest.listaOre.get(oSorg.giorno, oSorg.spazio);
+                if ( (oDest_dDest != null) 
+                        || (dDest.getGiornoLibero() == oSorg.giorno)
+                        || (dDest.getBloccata(oSorg.giorno, oSorg.spazio) == null) ) {
+                    // il docente dDest non ha un'ora libera in oSorg
+                    // o ha l'ora bloccata o il giorno libero
+
+                    Vector oreIntermedie = dDest.oreLibere;
+                    // nelle ore libere di dDest si cerca un docente
+                    // che ha come ora libera oSorg
+                    for (int i=0; i < oreIntermedie.size(); i++) {
+                        OraLibera o = (OraLibera) oreIntermedie.get(i);
+                        OraGraph oraIntermedia = oSorg.classe.listaOre.get(o.giorno, o.spazio);
+                        // nell'ora libera del docente si recupera l'ora del docente
+                        // intermedio appartenente alla classe
+                        if (oraIntermedia != null) {
+                            Docente diTeo = null;
+                            Docente diCom = null;
+                            boolean scambioOK = false;
+                            diTeo = (Docente) oraIntermedia.getDoc();
+                            diCom = (Docente) oraIntermedia.getDocCom();
+
+                            if ((diTeo != null) && (diCom == null)) {
+                                // esiste un docente dDest con cui provare a fare la triangolazione
+                                // si recupera l'ora del docente intermedio in corrispondenza
+                                // dell'ora sorgente
+                                OraGraph odTeo = diTeo.listaOre.get(oSorg.giorno, oSorg.spazio);
+                                if ((odTeo == null) && (diTeo.getGiornoLibero() != oSorg.giorno)
+                                        && (diTeo.getBloccata(oSorg.giorno, oSorg.spazio) == null)) {
+                                    // se l'ora è libera si è trovato uno scambio a 3
+                                    totMess = addMessErr(totMess, -1, "Scambio  possibile a 3 : \n" +
+                                        oSorg.docente.nome +
+                                        " da "+GestOrarioApplet.giorno2Str(oSorg.giorno, true)+" "+oSorg.spazio + " ora  " +
+                                        " a "+GestOrarioApplet.giorno2Str(oDest.giorno, true)+" "+oDest.spazio + "ora\n" +
+                                        oDest.docente.nome +
+                                        " da "+GestOrarioApplet.giorno2Str(oDest.giorno, true)+" "+oDest.spazio + " ora  " +
+                                        " a "+GestOrarioApplet.giorno2Str(oraIntermedia.giorno, true)+" "+oraIntermedia.spazio + "ora\n" +
+                                        diTeo.nome +
+                                        " da "+GestOrarioApplet.giorno2Str(oraIntermedia.giorno, true)+" "+oraIntermedia.spazio + " ora  " +
+                                        " a "+GestOrarioApplet.giorno2Str(oSorg.giorno, true)+" "+oSorg.spazio + "ora\n" +
+                                        " FINE ");
+                                    return totMess;
+                                }
+                            }
+                            else if ((diTeo != null) && (diCom != null)) {
+                                // esistono due docenti dDest con cui provare a fare la triangolazione
+                                // si recupera l'ora dei docenti intermedi in corrispondenza
+                                // dell'ora sorgente
+                                OraGraph odTeo = diTeo.listaOre.get(oSorg.giorno, oSorg.spazio);
+                                OraGraph odCom = diCom.listaOre.get(oSorg.giorno, oSorg.spazio);
+                                if ((odTeo == null) && (diTeo.getGiornoLibero() != oSorg.giorno)
+                                        && (diTeo.getBloccata(oSorg.giorno, oSorg.spazio) == null)
+                                 && (odCom == null) && (diCom.getGiornoLibero() != oSorg.giorno)
+                                        && (diCom.getBloccata(oSorg.giorno, oSorg.spazio) == null)) {
+                                    // se l'ora è libera si è trovato uno scambio a 3
+                                    totMess = addMessErr(totMess, -1, "Scambio  possibile a 3 : \n" +
+                                        oSorg.docente.nome +
+                                        " da "+GestOrarioApplet.giorno2Str(oSorg.giorno, true)+" "+oSorg.spazio + " ora  " +
+                                        " a "+GestOrarioApplet.giorno2Str(oDest.giorno, true)+" "+oDest.spazio + "ora\n" +
+                                        oDest.docente.nome +
+                                        " da "+GestOrarioApplet.giorno2Str(oDest.giorno, true)+" "+oDest.spazio + " ora  " +
+                                        " a "+GestOrarioApplet.giorno2Str(oraIntermedia.giorno, true)+" "+oraIntermedia.spazio + "ora\n" +
+                                        diTeo.nome + " e " + diCom.nome +
+                                        " da "+GestOrarioApplet.giorno2Str(oraIntermedia.giorno, true)+" "+oraIntermedia.spazio + " ora  " +
+                                        " a "+GestOrarioApplet.giorno2Str(oSorg.giorno, true)+" "+oSorg.spazio + "ora\n" +
+                                        " FINE ");
+                                    return totMess;
+                                }
+                            }
+                        }
+                    }
+                    if (oDest_dDest != null) {
+                        totMess = addMessErr(totMess, 1,
+                                GestOrarioApplet.giorno2Str(oDest_dDest.giorno,true)+" alla "+oDest_dDest.spazio+" ora "
+                                +dDest.nome+" HA già lezione nella "+oDest_dDest.classe.nome);
+                        System.out.println("docenteConProblemi "+dDest.nome+" ass g:"+oDest_dDest.giorno+" o:"+oDest_dDest.spazio);
+                    }
+                    else {
+                        totMess = oraBloccataGiornoLibero(oDest, oSorg.giorno, oSorg.spazio, totMess);
+                    }
+                }
+                return totMess;
+            }
+
+        }
+        else
+            // non dovrebbe accadere, ma se succede vuol dire che non
+            // c'è nulla da cui partire
+            return totMess;
+    }
+
+    // se per il docente di oSorg l'ora oDest è già occupata da un'ora in
+    // un'altra classe non si può fare lo scambio.
+    private int oraDestOccupata (OraGraph oSorg, int g, int s, int tipo, int totMess) {
+            // recupero l'ora di destinazione del docente di oSorg
+            Docente d = null;
+            if (tipo == Docente.TEORICO)
+                d = (Docente) oSorg.getDoc();
+            else if (tipo == Docente.ITP)
+                d = (Docente) oSorg.getDocCom();
+            if (d == null)
+                // nessun docente associato a oSorg
+                return totMess;
+
+            OraGraph oDest = d.listaOre.get(g, s);
+            if (oDest != null) {
+                // l'ora di destinazione è occupata
+//                    if (!oDest.classe.equals(oSorg.classe)) {
+                totMess = addMessErr(totMess, 1,
+                        GestOrarioApplet.giorno2Str(g,true)+" alla "+s+" ora "
+                        +d.nome+" ha GIA' lezione nella "+oDest.classe.nome);
+                System.out.println("docenteConProblemi "+d.nome+" ass g:"+g+" o:"+s);
+                oDest.docenteConProblemi = d;
+            }
+            else {
+                // l'ora di destinazione è libera per docente di oSorg
+                // si controlla se l'ora di destinazione del
+                // docente di (g, s) è libera e si controlla anche
+                // che non ci sia la possibilità di uno scambio intermedio
+                totMess = oraDestDestOccupata(oSorg, g, s, tipo, totMess);
+            }
+            return totMess;
+    }
+
+    // se per il docente di oSorg l'ora oDest è già occupata da un'ora in
+    // un'altra classe non si può fare lo scambio.
+    private int oraDestOccupata (OraGraph oSorg, int g, int s, int totMess) {
+        if (oSorg != null) {
+            // si controlla il docente "teorico"
+            int messT = oraDestOccupata(oSorg, g, s, Docente.TEORICO, totMess);
+            // si controlla il docente "in compresenza"
+            int messC = oraDestOccupata(oSorg, g, s, Docente.ITP, totMess);
+
+            // basta che uno dei due segnali un errore (mess > 0)
+            // e il risultato finale deve segnalare l'errore
+            if ((messT <= 0) && (messC <= 0))
+                totMess = totMess + messT + messC;
+            else if ((messT >= 0) && (messC >= 0))
+                totMess = totMess + messT + messC;
+            else if ((messT > 0) && (messC <= 0))
+                totMess = totMess + messT;
+            else if ((messT <= 0) && (messC > 0))
+                totMess = totMess + messC;
+            
+        }
+        return totMess;
+    }
+
+    private int oraBloccataGiornoLibero(OraGraph oSorg, int g, int s, int totMess) {
+        if (oSorg != null) {
+            Docente d = (Docente) oSorg.getDoc();
+            if ( (d != null) && (d.giornoLibero == g) ) {
+                totMess = addMessErr(totMess, 15,
+                    GestOrarioApplet.giorno2Str(g,true)+" è il giorno libero di "+d.nome);
+            }
+            if ( (d != null) && (d.getBloccata(g, s) != null) ) {
+                totMess = addMessErr(totMess, 16,
+                    GestOrarioApplet.giorno2Str(g,true)+" "+s+" ora è bloccata per "+d.nome);
+            }
+
+            d = (Docente) oSorg.getDocCom();
+            if ( (d != null) && (d.giornoLibero == g) ) {
+                totMess = addMessErr(totMess, 17,
+                    GestOrarioApplet.giorno2Str(g,true)+" è il giorno libero di "+d.nome);
+            }
+            if ( (d != null) && (d.getBloccata(g, s) != null) ) {
+                totMess = addMessErr(totMess, 18,
+                    GestOrarioApplet.giorno2Str(g,true)+" "+s+" ora è bloccata per "+d.nome);
+            }
+        }
+        return totMess;
+    }
+
+    private int oraDopoFineSCuola(OraGraph oSorg, int g, int s, int totMess) {
+        if ((oSorg != null) && (oSorg.getSucc() != null) && (s == GestOrarioApplet.maxNumSpazi)) {
+            // oSorg è all'inizio di una catena, ma oDest è l'ultima ora del giorno
+            totMess = addMessErr(totMess, 10,
+                    "Per effettuare lo scambio servirebbe un'ora dopo l'ultima dell'orario scolastico.");
+        }
+        return totMess;
+    }
+
+    // assunzione le due ore sono:
+    // caso 1 - entrambe ore semplici
+    // caso 2 - entrambe ore iniziali di catene
+    // caso 3 - solo una delle due sta all'inizio della catena
+    // quindi si confrontano le due ore e poi se una o entrambe sono catene la seconda
+    public int scambioCorrettoRic(int g1, int s1, int g2, int s2, 
+                                  boolean casoParticolare, int totMess,
+                                  SelCorOre selCor, boolean selez) {
 
         if ( (g1 < 1) || (g2 < 1) || (s1 < 1) || (s2 < 1)
              || (g1 > GestOrarioApplet.maxNumGiorni)
@@ -1153,36 +1388,13 @@ public class GraphTable {
         OraGraph o1 = listaOre.get(g1, s1);
         OraGraph o2 = listaOre.get(g2, s2);
 
-
-
-        if ((o1 != null) && (o1.getSucc() != null) && (s2 > GestOrarioApplet.maxNumSpazi)) {
-            totMess = addMessErr(totMess, 10,
-                    "Per effettuare lo scambio servirebbe un'ora al di fuori dell'orario scolastico.");
+        totMess = oraDopoFineSCuola(o1, g2, s2, totMess);
+        if (totMess != 0)
             return totMess;
-        }
 
-        if ((o2 != null) && (o2.getSucc() != null) && (s1 > GestOrarioApplet.maxNumSpazi)) {
-            totMess = addMessErr(totMess, 10,
-                    "Per effettuare lo scambio servirebbe un'ora al di fuori dell'orario scolastico.");
+        totMess = oraDopoFineSCuola(o2, g1, s1, totMess);
+        if (totMess != 0)
             return totMess;
-        }
-
-        // non dovrebbe succedere, ma non si sa mai
-        // però occorre controllare il caso particolare in cui si deve
-        // controllare l'ora che precede una catena con l'ultima della catena
-        if ( (o1 != null) && (o1.getPrec() != null) && (o1.getSucc() == null)
-          && (o2 != null) && (o2.getPrec() == null) && (o2.getSucc() != null)
-                && !((g1 == g2) && (s1-2 == s2)) ) {
-            totMess = addMessErr(totMess, 11,
-                "Per scambiare ore collegate selezione e corrente dovrrebbero essere allineate.");
-        }
-        // non dovrebbe succedere, ma non si sa mai
-        if ( (o1 != null) && (o1.getPrec() != null) && (o1.getSucc() == null)
-          && (o2 != null) && (o2.getPrec() == null) && (o2.getSucc() != null)
-                && !((g1 == g2) && (s2-2 == s1))  ) {
-            totMess = addMessErr(totMess, 11,
-                "Per scambiare ore collegate selezione e corrente dovrrebbero essere allineate");
-        }
 
         // è inutile scambiare due ore vuote
         if ((o1 == null) && (o2 == null)) {
@@ -1199,12 +1411,11 @@ public class GraphTable {
         }
 
         // è inutile scambiare due ore dello stesso docente nella stessa classe
-        // fa eccezione il caso (che non si dovrebbe verificare):
+        // forse fa eccezione il caso (che non si dovrebbe verificare):
         // sposto in giù di 1 o su di 1 le ore di laboratorio
         // per cui si potrebbe dover controllare la prima di lab
         // con la seconda di lab
-        if ( (o1 != null) && (o2 != null)
-         && !( (o1.getSucc() != null) && (g1 == g2) && (s1+1 == s2) ) ) {
+        if ( (o1 != null) && (o2 != null) ) {
             Docente dT1 = (Docente) o1.getDoc();
             Docente dT2 = (Docente) o2.getDoc();
             Docente dL1 = (Docente) o1.getDocCom();
@@ -1214,157 +1425,64 @@ public class GraphTable {
                 "Le ore da scambiare sono identiche.");
                 return totMess;
             }
-            /****
-            for (int i = 0; i < o1.docenti.size(); i++) {
-                d1 = (Docente) o1.docenti.elementAt(i);
-                for (int j = 0; j < o2.docenti.size(); j++) {
-                    d2 = (Docente) o2.docenti.elementAt(i);
-                    if ((d1 == d2) && (o1.classe == o2.classe)) {
-                        mess = "Entrambe le ore sono di "+d1.nome+".";
-                        return mess;
-                    }
-                }
-            }
-             *****/
         }
+
+        /***************************************************************
+        // non dovrebbe succedere, ma non si sa mai
+        // però occorre controllare il caso particolare in cui si deve
+        // controllare l'ora che precede una catena con l'ultima della catena
+        if ( (o1 != null) && (o1.getPrec() != null) && (o1.getSucc() == null)
+          && (o2 != null) && (o2.getPrec() == null) && (o2.getSucc() != null)
+                && !((g1 == g2) && (s1-2 == s2)) ) {
+            // o1 è la seconda della catena, o2 è la prima della catena
+            // la catena di o1 e di o2 devono avere un'ora in comune?!?
+            totMess = addMessErr(totMess, 11,
+                "Per scambiare ore collegate selezione e corrente dovrrebbero essere allineate.");
+        }
+        // non dovrebbe succedere, ma non si sa mai
+        if ( (o1 != null) && (o1.getPrec() != null) && (o1.getSucc() == null)
+          && (o2 != null) && (o2.getPrec() == null) && (o2.getSucc() != null)
+                && !((g1 == g2) && (s2-2 == s1))  ) {
+            totMess = addMessErr(totMess, 11,
+                "Per scambiare ore collegate selezione e corrente dovrrebbero essere allineate");
+        }
+      ***************************************************************/
 
         // se una delle due ore è nel giorno libero/ora bloccata del/dei
-        // docente/i non si può fare (il giorno libero non dovrebbe essere
-        // selezionato, ma non si sa mai)
-        if (o1 != null) {
-            Docente d = (Docente) o1.getDoc();
-            if ( (d != null) && (d.giornoLibero == g2) ) {
-                totMess = addMessErr(totMess, 15,
-                    GestOrarioApplet.giorno2Str(g2,true)+" è il giorno libero di "+d.nome);
-                return totMess;
-            }
-            if ( (d != null) && (d.getBloccata(g2, s2) != null) ) {
-                totMess = addMessErr(totMess, 16,
-                    GestOrarioApplet.giorno2Str(g2,true)+" "+s2+" ora è bloccata per "+d.nome);
-                return totMess;
-            }
+        // docente/i non si può fare
 
+        totMess = oraBloccataGiornoLibero(o1, g2, s2, totMess);
+        if (totMess != 0)
+            return totMess;
+//        totMess = oraBloccataGiornoLibero(o2, g1, s1, totMess);
+//        if (totMess != 0)
+//            return totMess;
 
-            d = (Docente) o1.getDocCom();
-            if ( (d != null) && (d.giornoLibero == g2) ) {
-                totMess = addMessErr(totMess, 17,
-                    GestOrarioApplet.giorno2Str(g2,true)+" è il giorno libero di "+d.nome);
-                return totMess;
-            }
-            if ( (d != null) && (d.getBloccata(g2, s2) != null) ) {
-                totMess = addMessErr(totMess, 18,
-                    GestOrarioApplet.giorno2Str(g2,true)+" "+s2+" ora è bloccata per "+d.nome);
-                return totMess;
-            }
-        }
-
-        if (o2 != null) {
-            Docente d = (Docente) o2.getDoc();
-            if ( (d != null) && (d.giornoLibero == g1) ) {
-                totMess = addMessErr(totMess, 19,
-                    GestOrarioApplet.giorno2Str(g1,true)+" è il giorno libero di "+d.nome);
-                return totMess;
-            }
-            if ( (d != null) && (d.getBloccata(g1, s1) != null) ) {
-                totMess = addMessErr(totMess, 20,
-                    GestOrarioApplet.giorno2Str(g1,true)+" "+s1+" ora è bloccata per "+d.nome);
-                return totMess;
-            }
-
-            d = (Docente) o2.getDocCom();
-            if ( (d != null) && (d.giornoLibero == g1) ) {
-                totMess = addMessErr(totMess, 21,
-                    GestOrarioApplet.giorno2Str(g1,true)+" è il giorno libero di "+d.nome);
-                return totMess;
-            }
-            if ( (d != null) && (d.getBloccata(g1, s1) != null) ) {
-                totMess = addMessErr(totMess, 22,
-                    GestOrarioApplet.giorno2Str(g1,true)+" "+s1+" ora è bloccata per "+d.nome);
-                return totMess;
-            }
-        }
 
         // se per il docente di o1 l'ora o2 è già occupata da un'ora in
-        // un'altra classe non si può fare lo scambio e viceversa.
-        if (o1 != null) {
-            Docente d = (Docente) o1.getDoc();
-            if (d != null) {
-                OraGraph o = d.listaOre.get(g2, s2);
-                if ( (o != null) && (!o.classe.equals(o1.classe)) ){
-                    totMess = addMessErr(totMess, 1,
-                            GestOrarioApplet.giorno2Str(g2,true)+" alla "+s2+" ora "
-                            +d.nome+" ha già lezione nella "+o.classe.nome);
-                    System.out.println("docenteConProblemi "+d.nome+" ass g:"+o.giorno+" o:"+o.spazio);
-                    if (o2 != null)
-                        o2.docenteConProblemi = d;
-//                    return mess;
-                }
-            }
-            d = (Docente) o1.getDocCom();
-            if (d != null) {
-                OraGraph o = d.listaOre.get(g2, s2);
-                if ( (o != null) && (!o.classe.equals(o1.classe)) ){
-                    totMess = addMessErr(totMess, 1,
-                            GestOrarioApplet.giorno2Str(g2,true)+" alla "+s2+" ora "
-                            +d.nome+" ha già lezione nella "+o.classe.nome);
-                    System.out.println("docenteConProblemi "+d.nome+" ass g:"+o.giorno+" o:"+o.spazio);
-                    if ( (o2 != null) && (o2.docenteConProblemi == null) )
-                        o2.docenteConProblemi = d;
-//                    return mess;
-                }
-            }
-        }
-        // se per il docente di o1 l'ora o2 è già occupata da un'ora in
-        // un'altra classe non si può fare lo scambio e viceversa.
-        if ((o1 != null) && (o2 != null)) {
-            Docente d = (Docente) o2.getDoc();
-            if (d != null) {
-                OraGraph o = d.listaOre.get(o1.giorno, o1.spazio);
-                if ( (o != null) && (!o.classe.equals(o2.classe)) ){
-                    totMess = addMessErr(totMess, 1,
-                            GestOrarioApplet.giorno2Str(o1.giorno,true)+" alla "+o1.spazio+" ora "
-                            +d.nome+" ha già lezione nella "+o.classe.nome);
-                    System.out.println("docenteConProblemi "+d.nome+" ass g:"+o.giorno+" o:"+o.spazio);
-                    o2.docenteConProblemi = d;
-//                    return mess;
-                }
-            }
-            d = (Docente) o2.getDocCom();
-            if (d != null) {
-                OraGraph o = d.listaOre.get(o1.giorno, o1.spazio);
-                if ( (o != null) && (!o.classe.equals(o2.classe)) ){
-                    totMess = addMessErr(totMess, 1,
-                            GestOrarioApplet.giorno2Str(o1.giorno,true)+" alla "+o1.spazio+" ora "
-                            +d.nome+" ha già lezione nella "+o.classe.nome);
-                    System.out.println("docenteConProblemi "+d.nome+" ass g:"+o.giorno+" o:"+o.spazio);
-                    o2.docenteConProblemi = d;
-//                    return mess;
-                }
-            }
-        }
+        // un'altra classe e viceversa non si può fare lo scambio.
+        totMess = oraDestOccupata(o1, g2, s2, totMess);
 
         // se le due ore sono in aule diverse
         // o1 in classe/lab e o2 in lab/classe
         // se lab in o1 è occupata da un'altra classe non si può effettuare lo scambio
         if ( (o1!= null) && (o2!= null)
           &&!(o1.aula.nome.equalsIgnoreCase(o2.aula.nome)) ) {
-            OraGraph o = o2.aula.listaOre.get(o1.giorno, o1.spazio);
+            OraGraph o = o2.aula.listaOre.get(g1, s1);
             if (o != null) {
                     totMess = addMessErr(totMess, 2,
-                        GestOrarioApplet.giorno2Str(o1.giorno,true)+" alla "+o1.spazio+" ora, l'aula"
+                        GestOrarioApplet.giorno2Str(g1,true)+" alla "+s1+" ora, l'aula"
                         +o2.aula.nome+" è già occupata dalla "+o.classe.nome);
-//                return mess;
             }
         }
         // e viceversa
         if ( (o2!= null) && (o1!= null)
           &&!(o1.aula.nome.equalsIgnoreCase(o2.aula.nome)) ) {
-            OraGraph o = o1.aula.listaOre.get(o2.giorno, o2.spazio);
+            OraGraph o = o1.aula.listaOre.get(g2, s2);
             if (o != null) {
                     totMess = addMessErr(totMess, 2,
-                        GestOrarioApplet.giorno2Str(o2.giorno,true)+" alla "+o2.spazio+" ora, l'aula"
+                        GestOrarioApplet.giorno2Str(g2,true)+" alla "+s2+" ora, l'aula"
                         +o1.aula.nome+" è già occupata dalla "+o.classe.nome+".");
-//                return mess;
             }
         }
 
@@ -1387,7 +1505,7 @@ public class GraphTable {
                 if ( (o != null) && (!o.classe.equals(o1.classe)) ) {
                     totMess = addMessErr(totMess, 1,
                             GestOrarioApplet.giorno2Str(o1.giorno,true)+" alla "+(s1+1)+" ora "
-                            +d.nome+" ha già lezione nella "+o.classe.nome);
+                            +d.nome+" ha già lezIONE nella "+o.classe.nome);
                     System.out.println("docenteConProblemi "+d.nome+" ass g:"+o.giorno+" o:"+(s1+1));
                     o2.docenteConProblemi = d;
                 }
@@ -1403,7 +1521,7 @@ public class GraphTable {
                 if ( (o != null) && (!o.classe.equals(o1.classe)) ) {
                     totMess = addMessErr(totMess, 1,
                             GestOrarioApplet.giorno2Str(o1.giorno,true)+" alla "+(s1-1)+" ora "
-                            +d.nome+" ha già lezione nella "+o.classe.nome);
+                            +d.nome+" ha già lezione NELla "+o.classe.nome);
                     System.out.println("docenteConProblemi "+d.nome+" ass g:"+o.giorno+" o:"+(s1-1));
                     o2.docenteConProblemi = d;
                 }
@@ -1419,7 +1537,7 @@ public class GraphTable {
                 if ( (o != null) && (!o.classe.equals(o2.classe)) ) {
                     totMess = addMessErr(totMess, 1,
                             GestOrarioApplet.giorno2Str(o2.giorno,true)+" alla "+(s2+1)+" ora "
-                            +d.nome+" ha già lezione nella "+o.classe.nome);
+                            +d.nome+" ha già lezione nelLA "+o.classe.nome);
                     System.out.println("docenteConProblemi "+d.nome+" ass g:"+o.giorno+" o:"+(s2+1));
                     o1.docenteConProblemi = d;
                 }
@@ -1550,7 +1668,7 @@ public class GraphTable {
             resetErrorMess();
             codErrorMess = scambioCorretto(selCor.selOra1.giorno, selCor.selOra1.spazio,
                                            curGiorno, curSpazio, 0, selCor, true);
-            if (codErrorMess == 0) {
+            if (codErrorMess <= 0) {
                 scambia(selCor.selOra1.giorno, selCor.selOra1.spazio, 
                         curGiorno, curSpazio);
                 selCor.resetAll();

@@ -15,7 +15,8 @@ import javax.swing.*; // dialog box
  */
 public class Aula {
 
-    static int lastID = 0;       // ultimo id utilizzato unico per tutte le aule
+    static int lastID = 0;          // ultimo id utilizzato unico per tutte le aule
+
     int    idAula;                  // identificatore univoco dell'aula
     String nome;                    // nome/sigla dell'aula uguale alla classe
                                     // solo se di suo utilizzo esclusivo
@@ -24,9 +25,11 @@ public class Aula {
     int    lato;                    // 0=nord 1=est 2=sud 3=ovest
     int    tipo;                    // 0=normale 1=lab 2=palestra
     Vector      materie;            // materie a cui l'aula è adatta
-    ListaOre    listaOre;           // ore in cui è occupata
+    ListaOre    listaOre;           // lista ore in cui è occupata
                                     // inserendo un'ora vuota si impedisce
                                     // la sua occupazione da parte di qualcuno
+    Vector      oreLibere;          // ore libere
+
     int    hFont;                   // carattere per le visualizzazioni
     Color  colore;                  // colore per le visualizzazioni
 
@@ -39,6 +42,27 @@ public class Aula {
         tipo = 0;
         materie = new Vector();     // predispongo un vettore vuoto
         listaOre = new ListaOre();  // predispongo un vettore vuoto
+
+        // predispongo un vettore vuoto
+        // e per ogni ora teoricamente possibile aggiungo l'ora libera
+        oreLibere = new Vector();
+        for (int g = 1; g <= GestOrarioApplet.maxNumGiorni; g++) {
+            for (int s = 1; s <= GestOrarioApplet.maxNumSpazi; s++) {
+                OraLibera ol;
+                ol = (OraLibera) GestOrarioApplet.infoMatDocAule.infoOreLibere.get(
+                        (g-1)*GestOrarioApplet.maxNumSpazi+(s-1));
+                if (ol != null) {
+                    ol.addAula(this);
+                    oreLibere.add(ol);
+                }
+                 else {
+                    String str = nome+" non può avere nel giorno "+g+" l'ora "+s+" come libera.";
+                    System.out.println(str);
+                    JOptionPane.showMessageDialog(null, str);
+                }
+           }
+        }
+
         hFont = 20;
         colore = Color.darkGray;
     }
@@ -53,14 +77,27 @@ public class Aula {
         materie     = new Vector();
         materie.add(m);
         listaOre    = new ListaOre();
-        /* creo ogni ora teoricamente possibile
+
+        // predispongo un vettore vuoto
+        // e per ogni ora teoricamente possibile aggiungo l'ora libera
+        oreLibere = new Vector();
         for (int g = 1; g <= GestOrarioApplet.maxNumGiorni; g++) {
             for (int s = 1; s <= GestOrarioApplet.maxNumSpazi; s++) {
-                listaOre.addOra(new OraGraph(g, s, null, GestOrarioApplet.d0,
-                    GestOrarioApplet.m0, GestOrarioApplet.a0, GestOrarioApplet.c0));
-            }
+                OraLibera ol;
+                ol = (OraLibera) GestOrarioApplet.infoMatDocAule.infoOreLibere.get(
+                        (g-1)*GestOrarioApplet.maxNumSpazi+(s-1));
+                if (ol != null) {
+                    ol.addAula(this);
+                    oreLibere.add(ol);
+                }
+                 else {
+                    String str = nome+" non può avere nel giorno "+g+" l'ora "+s+" come libera.";
+                    System.out.println(str);
+                    JOptionPane.showMessageDialog(null, str);
+                }
+           }
         }
-        */
+
         hFont = 20;
         colore = c;
     }
@@ -91,18 +128,27 @@ public class Aula {
     }
 
     public void addOra(OraGraph o) {
-        /*****
-        if (oo != null)
-            listaOre.remove(oo);
-        oo = null;
-         */
-         if ( (!listaOre.add(o)) && !(nome.equalsIgnoreCase("O")) ) {
+         if ( !listaOre.add(o) ) {
             OraGraph oo = listaOre.get(o.giorno, o.spazio);
             String str = "Nell'aula "+nome+", nel giorno "+o.giorno+" l'ora "+o.spazio;
             str += " non può essere assegnata a "+o.classe.nome+" perchè c'è già la "+oo.classe.nome;
             System.out.println(str);
             JOptionPane.showMessageDialog(null, str);
-
+        }
+        else {
+             // devo rimuovere l'ora da quelle libere
+            OraLibera ol;
+            ol = (OraLibera) GestOrarioApplet.infoMatDocAule.infoOreLibere.get(
+                    (o.giorno-1)*GestOrarioApplet.maxNumSpazi+(o.spazio-1));
+            if (ol != null) {
+                ol.removeAula(this);
+                oreLibere.remove(ol);
+            }
+             else {
+                String str = nome+" nel giorno "+o.giorno+" l'ora "+o.spazio+" non può essere rimossa dalle ore libere.";
+                System.out.println(str);
+                JOptionPane.showMessageDialog(null, str);
+            }
         }
    }
 
@@ -116,7 +162,7 @@ public class Aula {
             g.drawString("Tipo: "+tipo+" Uso: "+materie.toString(),     x, y+2*hFont);
         }
         else {
-            g.drawString("AULA:"+nome+"-"+tipo2String(tipo),  x, y);
+            g.drawString("AULA:"+nome+"-"+tipo2String(tipo),  x+20, y);
         }
     }
 

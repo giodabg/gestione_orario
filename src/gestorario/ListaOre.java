@@ -29,6 +29,13 @@ public class ListaOre {
             scrollList.add(d.toString());
             return true;
         }
+        else if (o.aula.nome.equalsIgnoreCase("D")) {
+            // le ore a disposizione non hanno nessun vincolo e
+            // possono essere sempre aggiunte
+            listaOre.add(d);
+            scrollList.add(d.toString());
+            return true;
+        }
         else {
             System.out.println("ORA NON AGGIUNTA gg:"+d.giorno+" oo:"+d.spazio);
             return false;

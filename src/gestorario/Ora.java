@@ -10,17 +10,18 @@ package gestorario;
  * @author Gio
  */
 public class Ora {
-    protected int     giorno;
-    protected int     spazio;  // 8-9 = 1°spazio
-    protected Classe  classe;
-    protected Docente  docente;
-    protected Docente  docenteCom;
-    protected boolean bloccata;
-    protected Materia materia;
-    protected Aula    aula;
-    protected Ora     succ; // se != null non deve separarsi dalla successiva
-    protected Ora     prec; // se != null non deve separarsi dalla precedente
-    protected int     adattaScambio; // -2: no scambio -1: si scambio
+    protected int       giorno;
+    protected int       spazio;  // 8-9 = 1°spazio
+    protected Classe    classe;
+    protected Docente   docente;
+    protected Docente   docenteCom;
+    protected boolean   bloccata;
+    protected boolean   disposizione;
+    protected Materia   materia;
+    protected Aula      aula;
+    protected Ora       succ; // se != null non deve separarsi dalla successiva
+    protected Ora       prec; // se != null non deve separarsi dalla precedente
+    protected int       adattaScambio; // -2: no scambio -1: si scambio
     static  public int     NONCALCOLATO = 0;
     static  public int     NOSCAMBIO    = -1;
     static  public int     SISCAMBIO    = 1;
@@ -34,6 +35,7 @@ public class Ora {
         docente     = null;
         docenteCom  = null;
         bloccata    = false;
+        disposizione= false;
         materia     = null;
         aula        = null;
         succ        = null;
@@ -45,13 +47,14 @@ public class Ora {
         docenteConProblemi = null;
     }
 
-    Ora(int g, int sp, boolean blocc) {
+    Ora(int g, int sp, boolean blocc, boolean dispo) {
         giorno  = g;
         spazio  = sp;
         classe  = null;
         docente = null;
         docenteCom = null;
         bloccata = blocc;
+        disposizione= dispo;
         materia = null;
         aula    = null;
         succ    = null;
@@ -72,6 +75,7 @@ public class Ora {
         docente = null;
         docenteCom = null;
         bloccata = false;
+        disposizione= false;
         materia = m;
         aula    = a;
 //        aula.addOra(this);

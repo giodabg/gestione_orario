@@ -55,10 +55,13 @@ public class LoadCSV {
                 ArrayList<String> riga = new ArrayList<String>();
                 while (st.hasMoreTokens()) {
                     tokenNumber++;
-                    String s = st.nextToken().trim();
-                    riga.add(s);
-                                System.out.println("Line # " + lineNumber +
+                    String s = st.nextToken();
+                                System.out.print("Line # " + lineNumber +
                                         ", Token # " + tokenNumber + ", Token : " + s);
+                    String s1;
+                    s1 = s.trim();
+                    riga.add(s1);
+                                System.out.println(" aggiunto Token : " + s1);
                 }
                 tabella[nDoc] = riga;
                 nDoc++;
@@ -145,33 +148,38 @@ public class LoadCSV {
         int numCol = 37;
         ArrayList<String> riga1 = null, riga2 = null;
         // inizio dalla riga 4 perché si saltano le intestazioni
-        for (int i = 3; i < nDoc; i++) {
-              System.out.println("**************** "+i+" **********************");
-//            int i = 16;
-            riga1 = getRiga(i);
-            if (i < nDoc - 1) {
-                riga2 = getRiga(i + 1);
+        for (int nRiga = 3; nRiga < nDoc; nRiga++) {
+              System.out.println("**************** "+nRiga+" **********************");
+//            int nRiga = 16;
+            riga1 = getRiga(nRiga);
+            if (nRiga < nDoc - 1) {
+                riga2 = getRiga(nRiga + 1);
             }
             if ((riga2 != null) && (riga2.get(0).equalsIgnoreCase(""))) {
                 // riga di un docente con compresenza/aula lab descritto nella riga che segue
+                // colore di default
                 Color cTeo = new Color(100, 100, 100, 100);
-                Materia mTeo = infoMatDocClassAule.getMateria("Sconosciuta");
-                if (mTeo == null) {
-                    mTeo = new Materia("Sconosciuta", "SCN", cTeo);
-                    infoMatDocClassAule.infoMaterie.add(mTeo);
+                // materia di default
+                m = infoMatDocClassAule.getMateria("Sconosciuta");
+                if (m == null) {
+                    m = new Materia("Sconosciuta", "SCN", cTeo);
+                    infoMatDocClassAule.infoMaterie.add(m);
                 }
+
+                // docente della riga in esame
                 d = infoMatDocClassAule.getDocente(riga1.get(0));
                 if (d == null) {
-                    d = new Docente(riga1.get(0), mTeo, Docente.TEORICO, cTeo);
+                    d = new Docente(riga1.get(0), m, Docente.TEORICO, cTeo);
                     infoMatDocClassAule.infoDocenti.add(d);
                     System.out.println("Creato docente teorico "+d.nome);
                 }
+
                 for (int gg = 1; gg <= 6; gg++) {
                     OraGraph precLab = null;
-                    for (int oo = 1; oo <= 6; oo++) {
+                    for (int ss = 1; ss <= 6; ss++) {
                         Aula a;
-                        String sTeo = riga1.get(1 + oo - 1 + (gg - 1) * 6);
-                        String sLab = riga2.get(1 + oo - 1 + (gg - 1) * 6);
+                        String sTeo = riga1.get(1 + ss - 1 + (gg - 1) * 6);
+                        String sLab = riga2.get(1 + ss - 1 + (gg - 1) * 6);
                                 System.out.print(sTeo + " = ");
                         if (sLab.equalsIgnoreCase("")) {
                             m = d.getMateria();
@@ -190,14 +198,25 @@ public class LoadCSV {
                             }
                             a.addMateria(d.getMateriaLab().nome);
                         }
+
                         if (sTeo.equalsIgnoreCase("")) {
-                            // bloccata
-                            d.addOraBloccata(gg, oo);
+                            // ora bloccata
+                            d.addOraBloccata(gg, ss);
+                        } else if (sTeo.equalsIgnoreCase("O")) {
+                            // ora bloccata perchè fatta in un'altra scuola
+                            d.addOraBloccata(gg, ss);
+                        } else if (sTeo.equalsIgnoreCase("R")) {
+                            // ora bloccata perchè fatta in un'altra scuola
+                            d.addOraBloccata(gg, ss);
                         } else if (sTeo.equalsIgnoreCase("-")) {
                             // giorno libero
                             d.setGiornoLibero(gg);
+                        } else if (sTeo.equalsIgnoreCase("D")) {
+                            // ora a disposizione ma libera
+                            d.addOraDisposizione(gg, ss);
                         } else if (sTeo.equalsIgnoreCase(".")) {
-                            // ora non assegnabile
+                            // ora libera
+                            d.addOraLibera(gg, ss);
                         } else {
                             Classe cl = infoMatDocClassAule.getClasse(sTeo);
                             if (cl == null) {
@@ -206,17 +225,17 @@ public class LoadCSV {
                                 infoMatDocClassAule.infoClassi.add(cl);
                             }
                             c = m.colore;
-                            o = cl.listaOre.get(gg, oo);
+                            o = cl.listaOre.get(gg, ss);
                             if (o == null) {
                                 // ora non ancora incontrata
-                                o = new OraGraph(gg, oo, cl, m, a, c);
+                                o = new OraGraph(gg, ss, cl, m, a, c);
                                 if (d.tipo == Docente.TEORICO)
                                     o.setDoc(d);
                                 else
                                     o.setDocComp(d);
                             } else {
                                 // ora già creata con un docente
-                                        System.out.println(cl.nome+" giorno "+gg+" ora "+oo+" aggiungo "+ d.nome);
+                                        System.out.println(cl.nome+" giorno "+gg+" ora "+ss+" aggiungo "+ d.nome);
                                 if (d.tipo == Docente.TEORICO) {
                                     if (o.setDoc(d) == false)
                                         o.setDocComp(d);
@@ -232,7 +251,7 @@ public class LoadCSV {
                                && (precLab.aula == o.aula) && (precLab.getPrec() == null)
                                && (precLab.getDoc() == o.getDoc())
                                && (precLab.getDocCom() == o.getDocCom())
-                               && (precLab.spazio == oo-1)
+                               && (precLab.spazio == ss-1)
                                && (precLab.giorno == gg) )  {
                                 precLab.setSucc(o);
                                 o.setPrec(precLab);
@@ -246,29 +265,28 @@ public class LoadCSV {
                         }
                     }
                 }
-                i++;  // salto riga di laboratorio
+                nRiga++;  // salto riga di laboratorio
                        System.out.println("");
             } else if (riga1 != null) {
                 // riga normale di un docente senza laboratorio
                 Color cTeo = new Color(100, 100, 100, 100);
-                Materia mTeo = infoMatDocClassAule.getMateria("Sconosciuta");
-                if (mTeo == null) {
-                    mTeo = new Materia("Sconosciuta", "SCN", cTeo);
-                    infoMatDocClassAule.infoMaterie.add(mTeo);
+                m = infoMatDocClassAule.getMateria("Sconosciuta");
+                if (m == null) {
+                    m = new Materia("Sconosciuta", "SCN", cTeo);
+                    infoMatDocClassAule.infoMaterie.add(m);
                 }
                 d = infoMatDocClassAule.getDocente(riga1.get(0));
                 if (d == null) {
-                    d = new Docente(riga1.get(0), mTeo, Docente.TEORICO, cTeo);
+                    d = new Docente(riga1.get(0), m, Docente.TEORICO, cTeo);
                     infoMatDocClassAule.infoDocenti.add(d);
                     System.out.println("Creato docente teorico "+d.nome);
-
                 }
+                m = d.getMateria();
                 for (int gg = 1; gg <= 6; gg++) {
-                    for (int oo = 1; oo <= 6; oo++) {
-                        String sTeo = riga1.get(1 + oo - 1 + (gg - 1) * 6);
+                    for (int ss = 1; ss <= 6; ss++) {
+                        String sTeo = riga1.get(1 + ss - 1 + (gg - 1) * 6);
                                 System.out.print(sTeo + " = ");
                         Aula a;
-                        m = d.getMateria();
                         a = infoMatDocClassAule.getAula(sTeo);
                         if (a == null) {
                             a = new Aula(sTeo);
@@ -276,13 +294,23 @@ public class LoadCSV {
                             infoMatDocClassAule.infoAule.add(a);
                         }
                         if (sTeo.equalsIgnoreCase("")) {
-                            // bloccata
-                            d.addOraBloccata(gg, oo);
+                            // ora bloccata
+                            d.addOraBloccata(gg, ss);
+                        } else if (sTeo.equalsIgnoreCase("O")) {
+                            // ora bloccata perchè fatta in un'altra scuola
+                            d.addOraBloccata(gg, ss);
+                        } else if (sTeo.equalsIgnoreCase("R")) {
+                            // ora bloccata perchè fatta in un'altra scuola
+                            d.addOraBloccata(gg, ss);
                         } else if (sTeo.equalsIgnoreCase("-")) {
                             // giorno libero
                             d.setGiornoLibero(gg);
+                        } else if (sTeo.equalsIgnoreCase("D")) {
+                            // ora a disposizione ma libera
+                            d.addOraDisposizione(gg, ss);
                         } else if (sTeo.equalsIgnoreCase(".")) {
-                            // ora non assegnabile
+                            // ora libera
+                            d.addOraLibera(gg, ss);
                         } else {
                             Classe cl = infoMatDocClassAule.getClasse(sTeo);
                             if (cl == null) {
@@ -290,17 +318,17 @@ public class LoadCSV {
                                 infoMatDocClassAule.infoClassi.add(cl);
                             }
                             c = m.colore;
-                            o = cl.listaOre.get(gg, oo);
+                            o = cl.listaOre.get(gg, ss);
                             if (o == null) {
                                 // ora non ancora incontrata
-                                o = new OraGraph(gg, oo, cl, m, a, c);
+                                o = new OraGraph(gg, ss, cl, m, a, c);
                                 if (d.tipo == Docente.TEORICO)
                                     o.setDoc(d);
                                 else
                                     o.setDocComp(d);
                             } else {
                                 // ora già creata con un docente
-                                      System.out.println(cl.nome+" giorno "+gg+" ora "+oo+" aggiungo "+ d.nome);
+                                      System.out.println(cl.nome+" giorno "+gg+" ora "+ss+" aggiungo "+ d.nome);
                                 if (d.tipo == Docente.TEORICO) {
                                     if (o.setDoc(d) == false)
                                         o.setDocComp(d);

@@ -17,6 +17,7 @@ public class ListaInfoMatDocClassAule {
     public Vector   infoDocenti;
     public Vector   infoClassi;
     public Vector   infoAule;
+    public Vector   infoOreLibere;
 
     ListaInfoMatDocClassAule() {
         int alphaLab = 140;
@@ -26,16 +27,27 @@ public class ListaInfoMatDocClassAule {
         Color cTeo, cLab;
         Materia mTeo, mLab;
         Docente d;
+        OraLibera ol;
 
         infoMaterie   = new Vector();
         infoDocenti   = new Vector();
         infoClassi    = new Vector();
         infoAule      = new Vector();
+
+        infoOreLibere = new Vector();
+        for (int g = 1; g <= GestOrarioApplet.maxNumGiorni; g++)
+            for (int s = 1; s <= GestOrarioApplet.maxNumSpazi; s++) {
+                ol = new OraLibera(g, s);
+                infoOreLibere.add(ol);
+            }
+
         
+/************
         cTeo = new Color(255, 255, 255, 255);
         mTeo = new Materia(idMat++, "Ora Libera", " ", cTeo);
         d    = new Docente(idDoc++, " ", mTeo, Docente.TEORICO, 5, cTeo);
         infoDocenti.add(d);
+*********/
 
 // Area di indirizzo
         cTeo = new Color(255, 150,  25, alpha);
@@ -504,6 +516,23 @@ public class ListaInfoMatDocClassAule {
         }
         if (a.nome.compareToIgnoreCase(nomeAula) == 0) {
             return a;
+        }
+        else
+            return null;
+    }
+
+    public OraLibera getOraLibera(int g, int s){
+        if (infoOreLibere.size() == 0)
+            return null;
+
+        int i = infoOreLibere.size()-1;
+        OraLibera o  = (OraLibera) infoOreLibere.get(i);
+        while ((i >= 0) && (o.giorno == g) && (o.spazio == s)) {
+            o  = (OraLibera) infoOreLibere.get(i);
+            i--;
+        }
+        if ((o.giorno == g) && (o.spazio == s)) {
+            return o;
         }
         else
             return null;

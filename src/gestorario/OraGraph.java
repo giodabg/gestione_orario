@@ -33,12 +33,13 @@ public class OraGraph extends Ora {
         colore  = Color.GRAY;
     }
 
-    OraGraph(int g, int sp, boolean blocc) {
+    OraGraph(int g, int sp, boolean blocc, boolean dispo) {
         succ        = null;
         prec        = null;
         giorno  = g;
         spazio  = sp;
         bloccata = blocc;
+        disposizione = dispo;
         x       = 0;
         y       = 0;
         alt     = 0;
@@ -130,7 +131,7 @@ public class OraGraph extends Ora {
 //            g.fillPolygon(xpoints, ypoints, 3);
         }
         else if (sel == SISCAMBIO) {
-            g.setColor(Color.BLACK);
+            g.setColor(Color.GREEN);
             g.fillRect(x+6, y+12, alt-12, largh-18);
             g.setColor(Color.WHITE);
             g.drawRect(x+6, y+12, alt-12, largh-18);
@@ -169,7 +170,7 @@ public class OraGraph extends Ora {
 
         if (adattaScambio == NOSCAMBIO) {
             // evidenzio la cella come non adatta allo scambio (vedi anche GraphTable)
-            paintScambio(g, x, y, alt, largh, NOSCAMBIO);
+            // paintScambio(g, x, y, alt, largh, NOSCAMBIO);
         }
         else if (adattaScambio == SISCAMBIO) {
             // evidenzio la cella come adatta allo scambio (vedi anche GraphTable)
@@ -194,7 +195,7 @@ public class OraGraph extends Ora {
 //            g.drawRect(x+3, y+3, alt-6, largh-6);
 //            g.setColor(new Color(colore.getRed(), colore.getGreen(), colore.getBlue(), 125));
 //            g.setColor(new Color(255, 150, 0, 125));
-            g.setColor(Color.PINK);
+            g.setColor(Color.RED);
             g.drawRect(x+1, y+1, alt-2, largh-2);
             g.drawRect(x+2, y+2, alt-4, largh-4);
             g.drawRect(x+3, y+3, alt-6, largh-6);
@@ -206,21 +207,21 @@ public class OraGraph extends Ora {
             g.setColor(Color.WHITE);
             g.drawLine(x+2, y+8, x+2, y+largh);
             g.setColor(Color.GREEN);
-            g.drawLine(x+4, y+10,x+4, y+largh);
+            g.drawLine(x+5, y+10,x+5, y+largh);
         }
         // seconda di due
         if  (getPrec() != null) {
             g.setColor(Color.WHITE);
             g.drawLine(x+2, y,   x+2, y+largh-8);
             g.setColor(Color.GREEN);
-            g.drawLine(x+4, y,   x+4, y+largh-10);
+            g.drawLine(x+5, y,   x+5, y+largh-10);
         }
         // unica
         if ( (docente != null) && (docenteCom != null) )  {
             g.setColor(Color.WHITE);
             g.drawLine(x+2, y+8, x+2, y+largh-8);
             g.setColor(Color.GREEN);
-            g.drawLine(x+4, y+10,x+4, y+largh-10);
+            g.drawLine(x+5, y+10,x+5, y+largh-10);
         }
         // visualizza nome della classe associata all'ora
         if (info == 1) {
