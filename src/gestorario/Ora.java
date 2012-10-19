@@ -21,7 +21,7 @@ public class Ora {
     protected Aula      aula;
     protected Ora       succ; // se != null non deve separarsi dalla successiva
     protected Ora       prec; // se != null non deve separarsi dalla precedente
-    protected int       adattaScambio; // -2: no scambio -1: si scambio
+//    protected int       adattaScambio; // -2: no scambio -1: si scambio
     static  public int     NONCALCOLATO = 0;
     static  public int     NOSCAMBIO    = -1;
     static  public int     SISCAMBIO    = 1;
@@ -43,7 +43,7 @@ public class Ora {
         /*candidata   = false;
         corrente    = false;
         selezionata = false;*/
-        adattaScambio = NONCALCOLATO;
+//        adattaScambio = NONCALCOLATO;
         docenteConProblemi = null;
     }
 
@@ -62,7 +62,7 @@ public class Ora {
         /*candidata = false;
         corrente = false;
         selezionata = false;*/
-        adattaScambio = NONCALCOLATO;
+//        adattaScambio = NONCALCOLATO;
         docenteConProblemi = null;
     }
 
@@ -84,7 +84,7 @@ public class Ora {
         /*candidata = false;
         corrente = false;
         selezionata = false;*/
-        adattaScambio = NONCALCOLATO;
+//        adattaScambio = NONCALCOLATO;
         docenteConProblemi = null;
     }
 
@@ -124,12 +124,12 @@ public class Ora {
     selezionata = false;
     }*/
 
-    public void setScambio(int val) {
-        adattaScambio = val;
-    }
-    public int getScambio() {
-        return adattaScambio;
-    }
+//    public void setScambio(int val) {
+//        adattaScambio = val;
+//    }
+//    public int getScambio() {
+//        return adattaScambio;
+//    }
 
     public Classe getClasse() {
         return classe;

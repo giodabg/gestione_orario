@@ -527,11 +527,11 @@ public class ListaInfoMatDocClassAule {
 
         int i = infoOreLibere.size()-1;
         OraLibera o  = (OraLibera) infoOreLibere.get(i);
-        while ((i >= 0) && (o.giorno == g) && (o.spazio == s)) {
+        while ((i >= 0) && (o.giorno() == g) && (o.spazio() == s)) {
             o  = (OraLibera) infoOreLibere.get(i);
             i--;
         }
-        if ((o.giorno == g) && (o.spazio == s)) {
+        if ((o.giorno() == g) && (o.spazio() == s)) {
             return o;
         }
         else

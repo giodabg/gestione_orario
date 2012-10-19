@@ -277,11 +277,11 @@ public class Classe {
         g.setColor(Color.BLACK);
         if (tutte) {
             g.drawString("Classe ID: "+idClasse
-                        + " Nome: "+anno+sezione+" "+int2Indirizzo(indirizzo, true)
-                        +"Ist:"+istituto,  x, y);
+                        + " Nome:"+anno+sezione+" "+int2Indirizzo(indirizzo, true)
+                        + " Ist:"+istituto,  x, y);
         }
         else {
-            g.drawString("Cl: "+anno+sezione+" "+int2Indirizzo(indirizzo, false),  x, y);
+            g.drawString("CL: "+anno+sezione+" "+int2Indirizzo(indirizzo, false),  x, y);
         }
 
     }

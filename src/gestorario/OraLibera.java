@@ -23,8 +23,7 @@ public class OraLibera extends OraInt {
     }
 
     OraLibera(int g, int sp) {
-        giorno      = g;
-        spazio      = sp;
+        this.set(g, sp);
         classi      = new Vector();
         docenti     = new Vector();
         aule        = new Vector();
@@ -52,7 +51,7 @@ public class OraLibera extends OraInt {
     }
 
     public boolean add(Ora o) {
-        if ((o.giorno == giorno) && (o.spazio == spazio)) {
+        if ((o.giorno == this.giorno() && (o.spazio == this.spazio()))) {
             if ((o.classe != null) && (classi.indexOf(o.classe) != -1))
                 classi.add(o.classe);
             if ((o.docente != null) && (docenti.indexOf(o.docente) != -1))

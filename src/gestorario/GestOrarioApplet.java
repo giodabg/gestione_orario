@@ -28,13 +28,39 @@ public class GestOrarioApplet extends Applet implements MouseListener, MouseMoti
     private Frame       m_parent;
     private FileDialog  m_fileDialog;
 
-    private GraphTable  tabClasseDocColl, tabLabDocColl, tabDocColl, tabDocComp;
-    private int         xTabClasseDocColl, xTabLabDocColl, xTabDocColl, xTabDocComp;
-    private int         yTabClasseDocColl, yTabLabDocColl, yTabDocColl, yTabDocComp;
+    private int         altCella, larghCella;
 
-    private GraphTable  tabDocScamComp, tabDocScam;
-    private int         xTabDocScamComp, xTabDocScam;
-    private int         yTabDocScamComp, yTabDocScam;
+    public  GraphTable  tabClasseDoc;
+    private int         xTabClasseDoc;
+    private int         yTabClasseDoc;
+    
+    private GraphTable  tabLabDoc;
+    private int         xTabLabDoc;
+    private int         yTabLabDoc;
+
+    private GraphTable  tabDoc;
+    private int         xTabDoc;
+    private int         yTabDoc;
+
+    private GraphTable  tabDocComp;
+    private int         xTabDocComp;
+    private int         yTabDocComp;
+
+    private GraphTable  tabDocScam;
+    private int         xTabDocScam;
+    private int         yTabDocScam;
+
+    private GraphTable  tabDocScamComp;
+    private int         xTabDocScamComp;
+    private int         yTabDocScamComp;
+
+    private GraphTable  tabDocInterm;
+    private int         xTabDocInterm;
+    private int         yTabDocInterm;
+
+    private GraphTable  tabDocIntermComp;
+    private int         xTabDocIntermComp;
+    private int         yTabDocIntermComp;
 
     static  int         maxNumSpazi = 6;
     static  int         maxNumGiorni = 6;
@@ -110,11 +136,33 @@ public class GestOrarioApplet extends Applet implements MouseListener, MouseMoti
 
         selCorApplet = new SelCorOre();
 
-        xTabDocColl     =  40; xTabClasseDocColl = 380; xTabDocScam     = 720;
-        yTabDocColl     =  40; yTabClasseDocColl =  40; yTabDocScam     =  40;
+        larghCella        = 38;
+        altCella          = 40;
 
-        xTabDocComp     =  40; xTabLabDocColl    = 380; xTabDocScamComp = 720;
-        yTabDocComp     = 380; yTabLabDocColl    = 380; yTabDocScamComp = 380;
+        xTabDoc       = 30;
+        yTabDoc       = 50;
+
+        xTabClasseDoc = xTabDoc+300;
+        yTabClasseDoc = yTabDoc;
+
+        xTabDocScam       = xTabClasseDoc+300;
+        yTabDocScam       = yTabDoc;
+
+        xTabDocInterm       = xTabDocScam+300;
+        yTabDocInterm       = yTabDoc;
+
+        xTabDocComp       = xTabDoc;
+        yTabDocComp       = 400;
+
+        xTabLabDoc    = xTabClasseDoc;
+        yTabLabDoc    = yTabDocComp;
+
+        xTabDocScamComp   = xTabDocScam;
+        yTabDocScamComp   = yTabDocComp;
+
+        xTabDocIntermComp       = xTabDocInterm;
+        yTabDocIntermComp       = yTabDocComp;
+
 
         do {
             String nome = JOptionPane.showInputDialog("Docente:");
@@ -127,27 +175,41 @@ public class GestOrarioApplet extends Applet implements MouseListener, MouseMoti
         } while (docApplet == null);
 
 
-        Frame frameApplet = (Frame)SwingUtilities.getAncestorOfClass(Frame.class, this);
-        tabDocColl       = new GraphTable(1, 6, 6, 50, 38, xTabDocColl,   yTabDocColl,    this, 0, frameApplet, selCorApplet);
-        tabClasseDocColl = new GraphTable(3, 6, 6, 50, 38, xTabClasseDocColl,yTabClasseDocColl, this, 0, frameApplet, selCorApplet);
+        m_parent = (Frame)SwingUtilities.getAncestorOfClass(Frame.class, this);
+//        JFrame.setDefaultLookAndFeelDecorated(true);
+//        JFrame frameListDialog = new JFrame("Oval Sample");
+//        frameListDialog.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+//        frameListDialog.setUndecorated(true);
+//        frameListDialog.getRootPane().setWindowDecorationStyle(JRootPane.PLAIN_DIALOG);
+//        frameListDialog.add(listPanel);
 
-        tabDocComp       = new GraphTable(2, 6, 6, 50, 38, xTabDocComp,   yTabDocComp,    this, 0, frameApplet, selCorApplet);
-        tabLabDocColl    = new GraphTable(4, 6, 6, 50, 38, xTabLabDocColl,yTabLabDocColl, this, 0, frameApplet, selCorApplet);
+        tabDoc           = new GraphTable(1, 6, 6, larghCella, altCella, xTabDoc,   yTabDoc,    this, 0, m_parent, selCorApplet);
+        tabDocComp       = new GraphTable(2, 6, 6, larghCella, altCella, xTabDocComp,   yTabDocComp,    this, 0, m_parent, selCorApplet);
 
-        tabDocScam       = new GraphTable(5, 6, 6, 50, 38, xTabDocScam,   yTabDocScam,    this, 0, frameApplet, selCorApplet);
-        tabDocScamComp   = new GraphTable(6, 6, 6, 50, 38, xTabDocScamComp,yTabDocScamComp, this, 0, frameApplet, selCorApplet);
+        tabClasseDoc = new GraphTable(3, 6, 6, larghCella, altCella, xTabClasseDoc,yTabClasseDoc, this, 0, m_parent, selCorApplet);
 
-        tabDocColl.setList(docApplet, TIPODOCENTE, infoMatDocAule);
-        tabDocColl.setVisible(true);
-        tabDocColl.setStatoRicerca(1);
+        tabLabDoc    = new GraphTable(4, 6, 6, larghCella, altCella, xTabLabDoc,yTabLabDoc, this, 0, m_parent, selCorApplet);
 
-        tabDocColl.setSuccTableRig(tabClasseDocColl);
-        tabDocColl.setSuccTableCol(tabDocComp);
+        tabDocScam       = new GraphTable(5, 6, 6, larghCella, altCella, xTabDocScam,   yTabDocScam,    this, 0, m_parent, selCorApplet);
+        tabDocScamComp   = new GraphTable(6, 6, 6, larghCella, altCella, xTabDocScamComp,yTabDocScamComp, this, 0, m_parent, selCorApplet);
 
-        tabClasseDocColl.setSuccTableRig(tabDocScam);
-        tabClasseDocColl.setSuccTableCol(tabLabDocColl);
+        tabDocInterm       = new GraphTable(7, 6, 6, larghCella, altCella, xTabDocInterm,   yTabDocInterm,    this, 0, m_parent, selCorApplet);
+        tabDocIntermComp   = new GraphTable(8, 6, 6, larghCella, altCella, xTabDocIntermComp,yTabDocIntermComp, this, 0, m_parent, selCorApplet);
+
+        tabDoc.setList(docApplet, TIPODOCENTE, infoMatDocAule);
+        tabDoc.setVisible(true);
+        tabDoc.setStatoRicerca(1);
+
+        tabDoc.setSuccTableRig(tabClasseDoc);
+        tabDoc.setSuccTableCol(tabDocComp);
+
+        tabClasseDoc.setSuccTableRig(tabDocScam);
+        tabClasseDoc.setSuccTableRigInterm(tabDocInterm);
+        tabDocComp.setSuccTableRig(tabLabDoc);
 
         tabDocScam.setSuccTableCol(tabDocScamComp);
+
+        tabDocInterm.setSuccTableCol(tabDocIntermComp);
 
         addMouseMotionListener(this);
         addMouseListener(this);
@@ -164,9 +226,9 @@ public class GestOrarioApplet extends Applet implements MouseListener, MouseMoti
                 docApplet = infoMatDocAule.getDocente(nome);
             }
         } while (docApplet == null);
-        tabDocColl.setList(docApplet, TIPODOCENTE, infoMatDocAule);
-        tabDocColl.setVisible(true);
-        tabDocColl.setStatoRicerca(1);
+        tabDoc.setList(docApplet, TIPODOCENTE, infoMatDocAule);
+        tabDoc.setVisible(true);
+        tabDoc.setStatoRicerca(1);
         repaint();
     }
 
@@ -180,19 +242,29 @@ public class GestOrarioApplet extends Applet implements MouseListener, MouseMoti
             g.setColor(Color.RED);
             g.setFont(fMedium);
         //  g.drawString("TABELLA 6 x 6",20,40);
-        //    g.drawString("Mosse: "+tabClasseDocColl.getMosse(),40,35);
-        //    g.drawString("Punti: "+tabClasseDocColl.punteggio,140,35);
-        //    g.drawString("Mosse: "+tabLabDocColl.getMosse(),500,35);
-        //    g.drawString("Punti: "+tabLabDocColl.punteggio,600,35);
+        //    g.drawString("Mosse: "+tabClasseDoc.getMosse(),40,35);
+        //    g.drawString("Punti: "+tabClasseDoc.punteggio,140,35);
+        //    g.drawString("Mosse: "+tabLabDoc.getMosse(),500,35);
+        //    g.drawString("Punti: "+tabLabDoc.punteggio,600,35);
             // l'ordine di visualizzazione è importante perchè ogni tabella
             // decide se la prossima è da visualizzare
             // e tutto viene scatenato dalla prima tabella
-            tabDocColl.paintTabella(g);
-            tabClasseDocColl.paintTabella(g);
-            tabDocComp.paintTabella(g);
-            tabLabDocColl.paintTabella(g);
-            tabDocScam.paintTabella(g);
-            tabDocScamComp.paintTabella(g);
+            tabDoc.setGraphic(g);
+            tabDoc.paintTabella();
+            tabClasseDoc.setGraphic(g);
+            tabClasseDoc.paintTabella();
+            tabDocComp.setGraphic(g);
+            tabDocComp.paintTabella();
+            tabLabDoc.setGraphic(g);
+            tabLabDoc.paintTabella();
+            tabDocScam.setGraphic(g);
+            tabDocScam.paintTabella();
+            tabDocScamComp.setGraphic(g);
+            tabDocScamComp.paintTabella();
+            tabDocInterm.setGraphic(g);
+            tabDocInterm.paintTabella();
+            tabDocIntermComp.setGraphic(g);
+            tabDocIntermComp.paintTabella();
     }
 
     private boolean mouseInTabella(MouseEvent e, GraphTable tab) {
@@ -238,12 +310,14 @@ public class GestOrarioApplet extends Applet implements MouseListener, MouseMoti
     }
 
     public void mouseMoved(MouseEvent e) {
-        if ( mustRepaintTab(e, tabDocColl, 1)
-          || mustRepaintTab(e, tabClasseDocColl, 2)
+        if ( mustRepaintTab(e, tabDoc, 1)
+          || mustRepaintTab(e, tabClasseDoc, 2)
           || mustRepaintTab(e, tabDocComp, 3)
-          || mustRepaintTab(e, tabLabDocColl, 4)
+          || mustRepaintTab(e, tabLabDoc, 4)
           || mustRepaintTab(e, tabDocScam, 5)
-          || mustRepaintTab(e, tabDocScamComp, 6)) {
+          || mustRepaintTab(e, tabDocScamComp, 6)
+          || mustRepaintTab(e, tabDocInterm, 7)
+          || mustRepaintTab(e, tabDocIntermComp, 8)) {
            repaint();
            return;
         }
@@ -270,17 +344,21 @@ public class GestOrarioApplet extends Applet implements MouseListener, MouseMoti
     }
 
     public void mousePressed(MouseEvent e) {
-        if (inTabella(e, tabDocColl))
+        if (inTabella(e, tabDoc))
             return;
-        if (inTabella(e, tabClasseDocColl))
+        if (inTabella(e, tabClasseDoc))
             return;
         if (inTabella(e, tabDocComp))
             return;
-        if (inTabella(e, tabLabDocColl))
+        if (inTabella(e, tabLabDoc))
             return;
         if (inTabella(e, tabDocScam))
             return;
         if (inTabella(e, tabDocScamComp))
+            return;
+        if (inTabella(e, tabDocInterm))
+            return;
+        if (inTabella(e, tabDocIntermComp))
             return;
     }
 
@@ -357,7 +435,7 @@ public class GestOrarioApplet extends Applet implements MouseListener, MouseMoti
             } else if (x == 2) {
                 return "Martedì";
             } else if (x == 3) {
-                return "Mercole";
+                return "Mercoledì";
             } else if (x == 4) {
                 return "Giovedì";
             } else if (x == 5) {

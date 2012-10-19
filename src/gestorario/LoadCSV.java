@@ -59,9 +59,18 @@ public class LoadCSV {
                                 System.out.print("Line # " + lineNumber +
                                         ", Token # " + tokenNumber + ", Token : " + s);
                     String s1;
-                    s1 = s.trim();
-                    riga.add(s1);
-                                System.out.println(" aggiunto Token : " + s1);
+                    if (s.startsWith("\"")){
+                        s1 = s.substring(1, s.length()-1);
+                        riga.add(s1.trim());
+                    }
+                    else if (s.isEmpty()){
+                        s1 = "";
+                    }
+                    else{
+                        s1 = s.trim();
+                        riga.add(s1);
+                    }
+                                System.out.println(" aggiunto Token : (" + s1 + ")");
                 }
                 tabella[nDoc] = riga;
                 nDoc++;
@@ -176,11 +185,17 @@ public class LoadCSV {
 
                 for (int gg = 1; gg <= 6; gg++) {
                     OraGraph precLab = null;
+                                System.out.println("riga in esame:("+riga1.toString()+")");
                     for (int ss = 1; ss <= 6; ss++) {
                         Aula a;
+                        // se sabato ci sono solo 5 ore si esce dal ciclo
+                        // perchè 36 > 35 (considerando che in riga[0] c'è il docente
+                        if (1 + ss - 1 + (gg - 1) * 6 >= riga1.size()-1)
+                            break;
+
                         String sTeo = riga1.get(1 + ss - 1 + (gg - 1) * 6);
                         String sLab = riga2.get(1 + ss - 1 + (gg - 1) * 6);
-                                System.out.print(sTeo + " = ");
+                                System.out.print("teoria:"+sTeo + " = ");
                         if (sLab.equalsIgnoreCase("")) {
                             m = d.getMateria();
                             a = infoMatDocClassAule.getAula(sTeo);
@@ -235,7 +250,7 @@ public class LoadCSV {
                                     o.setDocComp(d);
                             } else {
                                 // ora già creata con un docente
-                                        System.out.println(cl.nome+" giorno "+gg+" ora "+ss+" aggiungo "+ d.nome);
+                                        System.out.println("ora: "+cl.nome+" giorno "+gg+" ora "+ss+" aggiungo "+ d.nome);
                                 if (d.tipo == Docente.TEORICO) {
                                     if (o.setDoc(d) == false)
                                         o.setDocComp(d);
@@ -266,7 +281,7 @@ public class LoadCSV {
                     }
                 }
                 nRiga++;  // salto riga di laboratorio
-                       System.out.println("");
+                       System.out.println("Prossima riga");
             } else if (riga1 != null) {
                 // riga normale di un docente senza laboratorio
                 Color cTeo = new Color(100, 100, 100, 100);
@@ -284,8 +299,13 @@ public class LoadCSV {
                 m = d.getMateria();
                 for (int gg = 1; gg <= 6; gg++) {
                     for (int ss = 1; ss <= 6; ss++) {
+                        // se sabato ci sono solo 5 ore si esce dal ciclo
+                        // perchè 36 > 35 (considerando che in riga[0] c'è il docente
+                        if (1 + ss - 1 + (gg - 1) * 6 >= riga1.size()-1)
+                            break;
+
                         String sTeo = riga1.get(1 + ss - 1 + (gg - 1) * 6);
-                                System.out.print(sTeo + " = ");
+                                System.out.print("Teoria: "+sTeo + " = ");
                         Aula a;
                         a = infoMatDocClassAule.getAula(sTeo);
                         if (a == null) {
@@ -328,7 +348,7 @@ public class LoadCSV {
                                     o.setDocComp(d);
                             } else {
                                 // ora già creata con un docente
-                                      System.out.println(cl.nome+" giorno "+gg+" ora "+ss+" aggiungo "+ d.nome);
+                                      System.out.println("ora: "+cl.nome+" giorno "+gg+" ora "+ss+" aggiungo "+ d.nome);
                                 if (d.tipo == Docente.TEORICO) {
                                     if (o.setDoc(d) == false)
                                         o.setDocComp(d);

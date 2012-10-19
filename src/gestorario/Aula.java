@@ -162,7 +162,7 @@ public class Aula {
             g.drawString("Tipo: "+tipo+" Uso: "+materie.toString(),     x, y+2*hFont);
         }
         else {
-            g.drawString("AULA:"+nome+"-"+tipo2String(tipo),  x+20, y);
+            g.drawString("AULA:"+nome+"-"+tipo2String(tipo),  x, y);
         }
     }
 

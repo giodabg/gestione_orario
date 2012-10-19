@@ -60,6 +60,18 @@ public class SecondWindow extends JPanel implements MouseListener, MouseMotionLi
 
 
             Frame frameApplet = (Frame)SwingUtilities.getAncestorOfClass(Frame.class, this);
+//            JFrame.setDefaultLookAndFeelDecorated(true);
+//            JFrame frameListDialog = new JFrame("Oval Sample");
+//            frameListDialog.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+//            frameListDialog.setUndecorated(true);
+//            frameListDialog.getRootPane().setWindowDecorationStyle(JRootPane.PLAIN_DIALOG);
+
+//            ListJPanel listPanel = new ListJPanel();
+//            frameListDialog.add(listPanel);
+//            ListJDialog listDialog = new ListJDialog(frameApplet, true);
+
+
+/*******************
             tabDocColl       = new GraphTable(1, 6, 6, 50, 38, xTabDocColl,   yTabDocColl,    this, 1, frameApplet, selCorWin);
             tabClasseDocColl = new GraphTable(3, 6, 6, 50, 38, xTabClasseDocColl,yTabClasseDocColl, this, 1, frameApplet, selCorWin);
 
@@ -85,7 +97,7 @@ public class SecondWindow extends JPanel implements MouseListener, MouseMotionLi
             repaint();
             addMouseMotionListener(this);
             addMouseListener(this);
-
+*******************************************************/
       }
 
 
@@ -93,12 +105,18 @@ public class SecondWindow extends JPanel implements MouseListener, MouseMotionLi
 @Override
     public void paintComponent(Graphics g) {
             g.clearRect(0, 0, 1400, 900);
-            tabDocColl.paintTabella(g);
-            tabClasseDocColl.paintTabella(g);
-            tabDocComp.paintTabella(g);
-            tabLabDocColl.paintTabella(g);
-            tabDocScam.paintTabella(g);
-            tabDocScamComp.paintTabella(g);
+            tabDocColl.setGraphic(g);
+            tabDocColl.paintTabella();
+            tabClasseDocColl.setGraphic(g);
+            tabClasseDocColl.paintTabella();
+            tabDocComp.setGraphic(g);
+            tabDocComp.paintTabella();
+            tabLabDocColl.setGraphic(g);
+            tabLabDocColl.paintTabella();
+            tabDocScam.setGraphic(g);
+            tabDocScam.paintTabella();
+            tabDocScamComp.setGraphic(g);
+            tabDocScamComp.paintTabella();
     }
 
       private void actionTorna() {
@@ -172,9 +190,10 @@ public class SecondWindow extends JPanel implements MouseListener, MouseMotionLi
             && (e.getX() < tab.getShiftX() + (tab.getB() * tab.getColonne()))
             && (e.getY() > tab.getShiftY())
             && (e.getY() < tab.getShiftY() + (tab.getH() * tab.getRighe()))) {
-               tab.selezione(e, docWindow);
-               repaint();
-               return true;
+                Frame frameApplet = (Frame)SwingUtilities.getAncestorOfClass(Frame.class, this);
+                tab.selezione(e, docWindow);
+                repaint();
+                return true;
             }
         }
         return false;

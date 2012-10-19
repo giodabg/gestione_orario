@@ -33,6 +33,25 @@ public class Docente {
     int         hFont;
     Color       colore;
 
+    Docente() {
+        idDocente = lastID; lastID++;
+        nome      = "";
+        tipo      = 0;
+        materie   = new Vector();
+        oreLibere = new Vector();
+        listaOre  = new ListaOre();
+        listaOreBloccate = new ListaOre();
+        /*
+        for (int g=1; g <= GestOrarioApplet.maxNumGiorni; g++)
+        for (int s=1; s <= GestOrarioApplet.maxNumSpazi; s++)
+        listaOre.addOra(new OraGraph(g, s, null, GestOrarioApplet.d0,
+        GestOrarioApplet.m0, GestOrarioApplet.a0, GestOrarioApplet.c0));
+        */
+        giornoLibero = -1;
+        hFont = 20;
+        colore = Color.BLACK;
+    }
+
     Docente(String n, Materia m, int t, Color c) {
         idDocente = lastID; lastID++;
         nome      = n;
