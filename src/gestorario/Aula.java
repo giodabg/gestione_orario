@@ -9,10 +9,11 @@ import java.awt.*;  //grafica
 import java.util.Vector;
 import javax.swing.*; // dialog box
 
-    /**
+/**
  *
- * @author Gio
+ * @author Giovanni
  */
+
 public class Aula {
 
     static int lastID = 0;          // ultimo id utilizzato unico per tutte le aule
